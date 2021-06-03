@@ -531,6 +531,7 @@ Pass GetPass(const String& pass_name) {
 IRModule SequentialNode::operator()(IRModule mod, const PassContext& pass_ctx) const {
   for (const Pass& pass : passes) {
     ICHECK(pass.defined()) << "Found undefined pass for optimization.";
+    //std::cout<<"Running pass:"<<pass->Info()->name<<std::endl;
     const PassInfo& pass_info = pass->Info();
     if (!pass_ctx.PassEnabled(pass_info)) continue;
     // resolve dependencies

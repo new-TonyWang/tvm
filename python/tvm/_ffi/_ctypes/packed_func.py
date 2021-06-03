@@ -49,21 +49,24 @@ TVM_FREE_PYOBJ = TVMCFuncFinalizer(_ctypes_free_resource)
 ctypes.pythonapi.Py_IncRef(ctypes.py_object(TVM_FREE_PYOBJ))
 
 
-def _make_packed_func(handle, is_global):
+def _make_packed_func(handle, is_global,name=None):
     """Make a packed function class"""
     obj = _CLASS_PACKED_FUNC.__new__(_CLASS_PACKED_FUNC)
     obj.is_global = is_global
     obj.handle = handle
+    obj.name=name
     return obj
 
 
 def convert_to_tvm_func(pyfunc):
     """Convert a python function to TVM function
+    
 
     Parameters
     ----------
     pyfunc : python function
         The python function to be converted.
+        该函数很可能是TVM默认的算子策略，例如generic.py中的conv2d_strategy等一系列函数
 
     Returns
     -------
@@ -73,9 +76,13 @@ def convert_to_tvm_func(pyfunc):
     local_pyfunc = pyfunc
 
     def cfun(args, type_codes, num_args, ret, _):
-        """ ctypes function """
+        """ ctypes function，对比如下函数
+        int TVMFuncCall(TVMFunctionHandle func_handle, TVMValue* arg_values, int* type_codes, int num_args,
+                TVMValue* ret_val, int* ret_type_code)  
+        该函数是用于C调用python函数的转换        
+        """
         num_args = num_args.value if isinstance(num_args, ctypes.c_int) else num_args
-        pyargs = (C_TO_PY_ARG_SWITCH[type_codes[i]](args[i]) for i in range(num_args))
+        pyargs = (C_TO_PY_ARG_SWITCH[type_codes[i]](args[i]) for i in range(num_args))#把c的参数变为python的参数
         # pylint: disable=broad-except
         try:
             rv = local_pyfunc(*pyargs)
@@ -98,15 +105,15 @@ def convert_to_tvm_func(pyfunc):
             _ = rv
         return 0
 
-    handle = PackedFuncHandle()
+    handle = PackedFuncHandle()#ctypes.c_void_p
     f = TVMPackedCFunc(cfun)
     # NOTE: We will need to use python-api to increase ref count of the f
     # TVM_FREE_PYOBJ will be called after it is no longer needed.
     pyobj = ctypes.py_object(f)
     ctypes.pythonapi.Py_IncRef(pyobj)
-    if _LIB.TVMFuncCreateFromCFunc(f, pyobj, TVM_FREE_PYOBJ, ctypes.byref(handle)) != 0:
+    if _LIB.TVMFuncCreateFromCFunc(f, pyobj, TVM_FREE_PYOBJ, ctypes.byref(handle)) != 0:#将cfun转换为PackedFunc并传给handle
         raise get_last_ffi_error()
-    return _make_packed_func(handle, False)
+    return _make_packed_func(handle, False,pyfunc.__name__)
 
 
 def _make_tvm_args(args, temp_args):
@@ -192,9 +199,9 @@ def _make_tvm_args(args, temp_args):
 class PackedFuncBase(object):
     """Function base."""
 
-    __slots__ = ["handle", "is_global"]
+    __slots__ = ["handle", "is_global","name"]
     # pylint: disable=no-member
-    def __init__(self, handle, is_global):
+    def __init__(self, handle, is_global,name=None):
         """Initialize the function with handle
 
         Parameters
@@ -207,6 +214,7 @@ class PackedFuncBase(object):
         """
         self.handle = handle
         self.is_global = is_global
+        self.name = name
 
     def __del__(self):
         if not self.is_global and _LIB is not None:
@@ -278,15 +286,16 @@ def _handle_return_func(x):
     handle = x.v_handle
     if not isinstance(handle, PackedFuncHandle):
         handle = PackedFuncHandle(handle)
-    return _CLASS_PACKED_FUNC(handle, False)
+    return _CLASS_PACKED_FUNC(handle, False,)
 
 
 def _get_global_func(name, allow_missing=False):
     handle = PackedFuncHandle()
+    #print(name+"\n");
     check_call(_LIB.TVMFuncGetGlobal(c_str(name), ctypes.byref(handle)))
 
     if handle.value:
-        return _make_packed_func(handle, False)
+        return _make_packed_func(handle, False,name)
 
     if allow_missing:
         return None

@@ -37,7 +37,7 @@ namespace runtime {
  * \brief Internal object namespace to expose
  *        certain util functions for FFI.
  */
-class ObjectInternal {
+class ObjectInternal{
  public:
   /*!
    * \brief Retain an object handle.

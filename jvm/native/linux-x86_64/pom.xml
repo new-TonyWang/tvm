@@ -78,6 +78,13 @@ under the License.
           <compilerEndOptions>
             <compilerEndOption>-I../../../include</compilerEndOption>
             <compilerEndOption>${cflags}</compilerEndOption>
+            <!--<compilerEndOption>-I/media/s3lab-1/570c75c9-cb6f-4ce6-bcc5-9f636c7310f3/s3lab-1/home/Android/Sdk/ndk/21.3.6528147/sysroot/usr/include</compilerEndOption>
+            加入android 的jni路径
+            -->
+            <compilerEndOption>-I/lib/jvm/jdk-14.0.2/include</compilerEndOption>
+            <compilerEndOption>-I/lib/jvm/jdk-14.0.2/include/linux</compilerEndOption>
+            <!--加入java jni路径
+            -->
           </compilerEndOptions>
           <linkerStartOptions>
             <linkerStartOption>-shared</linkerStartOption>
@@ -92,21 +99,22 @@ under the License.
             <id>javah</id>
             <phase>generate-sources</phase>
             <configuration>
-              <javahOS>linux</javahOS>
-              <javahProvider>default</javahProvider>
-              <javahOutputDirectory>${project.build.directory}/custom-javah</javahOutputDirectory>
-              <workingDirectory>${basedir}</workingDirectory>
-              <javahOutputFileName>org_apache_tvm_native_c_api.h</javahOutputFileName>
-              <javahClassNames>
-                <javahClassName>org.apache.tvm.LibInfo</javahClassName>
-              </javahClassNames>
-            </configuration>
-            <goals>
-              <goal>javah</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-    </plugins>
-  </build>
-</project>
+              <!-- <javahOS>linux</javahOS>
+              -->
+               <javahProvider>default</javahProvider>
+               <javahOutputDirectory>${project.build.directory}/custom-javah</javahOutputDirectory>
+               <workingDirectory>${basedir}</workingDirectory>
+               <javahOutputFileName>org_apache_tvm_native_c_api.h</javahOutputFileName>
+               <javahClassNames>
+                 <javahClassName>org.apache.tvm.LibInfo</javahClassName>
+               </javahClassNames>
+             </configuration>
+             <goals>
+               <goal>javah</goal>
+             </goals>
+           </execution>
+         </executions>
+       </plugin>
+     </plugins>
+   </build>
+ </project>

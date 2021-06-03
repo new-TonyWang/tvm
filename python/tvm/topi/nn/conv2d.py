@@ -118,7 +118,7 @@ def conv2d_legalize(attrs, inputs, types):
 @tvm.target.generic_func
 def conv2d_alter_layout(attrs, inputs, tinfos, out_type):
     """Change Conv2D layout.
-
+    该函数会在不同后端进行实现，例如x86,arm,cuda等等，因此在此处不需要实现
     Parameters
     ----------
     attrs : tvm.ir.Attrs
@@ -134,7 +134,7 @@ def conv2d_alter_layout(attrs, inputs, tinfos, out_type):
     ----
     Unlike other TOPI functions, this function operates on both graph level and operator level.
     """
-    # not to change by default
+    # not to change by default`
     return None
 
 

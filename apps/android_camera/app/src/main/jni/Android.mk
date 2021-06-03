@@ -33,7 +33,11 @@ endif
 
 include $(config)
 
-LOCAL_SRC_FILES := org_apache_tvm_native_c_api.cc
+#LOCAL_SRC_FILES := org_apache_tvm_native_c_api.cc
+LOCAL_SRC_FILES := org_apache_tvm_native_c_api.cc \
+					$(ROOT_PATH)/src/runtime/rpc/rpc_channel.cc \
+					$(ROOT_PATH)/src/runtime/rpc/rpc_endpoint.cc \
+					$(ROOT_PATH)/src/runtime/rpc/rpc_local_session.cc
 LOCAL_LDFLAGS := -L$(SYSROOT)/usr/lib/ -llog
 
 LOCAL_C_INCLUDES := $(ROOT_PATH)/include \
@@ -44,6 +48,7 @@ LOCAL_MODULE = tvm4j_runtime_packed
 
 LOCAL_CPP_FEATURES += exceptions
 LOCAL_LDLIBS += -latomic
+#LOCAL_STATIC_LIBRARIES  += -latomic
 LOCAL_ARM_MODE := arm
 
 ifdef ADD_C_INCLUDES
@@ -52,6 +57,7 @@ endif
 
 ifdef ADD_LDLIBS
 	LOCAL_LDLIBS += $(ADD_LDLIBS)
+	#LOCAL_STATIC_LIBRARIES+= $(ADD_LDLIBS)
 endif
 
 include $(BUILD_SHARED_LIBRARY)

@@ -1,0 +1,34 @@
+@startuml op.h
+class RelayExprNode{
+
+}
+
+class RelayExpr{
+
+}
+
+class OpNode{
+
+}
+
+class Op{
+
+}
+
+class OpRegEntry{
+
+}
+
+class OpAttrMap{
+
+}
+
+RelayExprNode<|--OpNode
+RelayExpr<|--Op
+
+Op "*" *-- "1" OpNode
+
+
+
+
+@enduml

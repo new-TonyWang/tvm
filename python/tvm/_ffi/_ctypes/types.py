@@ -33,8 +33,8 @@ class TVMValue(ctypes.Union):
     ]
 
 
-TVMPackedCFunc = ctypes.CFUNCTYPE(
-    ctypes.c_int,
+TVMPackedCFunc = ctypes.CFUNCTYPE(#回调函数
+    ctypes.c_int,#f返回值类型
     ctypes.POINTER(TVMValue),
     ctypes.POINTER(ctypes.c_int),
     ctypes.c_int,

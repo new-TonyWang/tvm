@@ -138,7 +138,7 @@ xo, yo, xi, yi = s[C].tile(C.op.axis[0], C.op.axis[1], bn, bn)
 ko, ki = s[C].split(k, factor=4)
 
 # Hoist reduction domain outside the blocking loop
-s[C].reorder(xo, yo, ko, ki, xi, yi)
+s[C]. (xo, yo, ko, ki, xi, yi)
 
 func = tvm.build(s, [A, B, C], target=target, name="mmult")
 assert func

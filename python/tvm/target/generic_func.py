@@ -81,6 +81,7 @@ def get_native_generic_func(name):
     """Get a generic function from the global registry. If no
     function is registered under the given name, a new generic
     function is created.
+    从全局函数中寻找name对应的函数，若有则返回，若没有则创建一个空的函数。
 
     Parameters
     ----------
@@ -141,7 +142,7 @@ def override_native_generic_func(func_name):
         ----------
         fdefault : function
             The default function.
-
+            参数是注解紧跟的函数
         Returns
         -------
         fgeneric : function
@@ -186,7 +187,7 @@ def override_native_generic_func(func_name):
                 )
             return generic_func_node(*args)
 
-        fresult = decorate(fdefault, dispatch_func)
+        fresult = decorate(fdefault, dispatch_func)#将原函数传给dispatch_func
         fresult.fdefault = fdefault
         fresult.register = register
         fresult.generic_func_node = generic_func_node
@@ -264,9 +265,11 @@ def generic_func(fdefault):
         if func:
             return _do_reg(func)
         return _do_reg
-
+    
     def dispatch_func(func, *args, **kwargs):
-        """The wrapped dispath function"""
+        """The wrapped dispath function
+            可以用于根据target参数对不同函数进行分发(例如target= -keys=cpu则会调用cpu相关的函数)
+        """
         target = Target.current()
         if target is None:
             return func(*args, **kwargs)
@@ -275,7 +278,7 @@ def generic_func(fdefault):
                 return dispatch_dict[k](*args, **kwargs)
         return func(*args, **kwargs)
 
-    fdecorate = decorate(fdefault, dispatch_func)
+    fdecorate = decorate(fdefault, dispatch_func)#应该是使用dispatch_func装饰fdefault，并返回一个新的经过装饰的函数
     fdecorate.register = register
     fdecorate.fdefault = fdefault
     fdecorate.dispatch_dict = dispatch_dict

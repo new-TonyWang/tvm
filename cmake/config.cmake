@@ -46,7 +46,7 @@
 # - ON: enable CUDA with cmake's auto search
 # - OFF: disable CUDA
 # - /path/to/cuda: use specific path to cuda toolkit
-set(USE_CUDA OFF)
+set(USE_CUDA /usr/local/cuda)
 
 # Whether enable ROCM runtime
 #
@@ -82,7 +82,7 @@ set(USE_METAL OFF)
 set(USE_VULKAN OFF)
 
 # Whether enable OpenGL runtime
-set(USE_OPENGL OFF)
+set(USE_OPENGL ON)
 
 # Whether enable MicroTVM runtime
 set(USE_MICRO OFF)
@@ -116,7 +116,9 @@ set(USE_MICRO_STANDALONE_RUNTIME OFF)
 # - OFF: disable llvm, note this will disable CPU codegen
 #        which is needed for most cases
 # - /path/to/llvm-config: enable specific LLVM when multiple llvm-dev is available.
-set(USE_LLVM OFF)
+
+set(USE_LLVM /media/s3lab-1/570c75c9-cb6f-4ce6-bcc5-9f636c7310f3/s3lab-1/home/Develop/llvm/bin/llvm-config)
+
 
 #---------------------------------------------
 # Contrib libraries
@@ -178,7 +180,7 @@ set(USE_EDGETPU OFF)
 # - ON: enable cuDNN with cmake's auto search in CUDA directory
 # - OFF: disable cuDNN
 # - /path/to/cudnn: use specific path to cuDNN path
-set(USE_CUDNN OFF)
+set(USE_CUDNN ON)
 
 # Whether use cuBLAS
 set(USE_CUBLAS OFF)

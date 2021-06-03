@@ -198,5 +198,7 @@ tvm.relay.testing.yolo_detection.show_detections(img, dets, thresh, names, last_
 tvm.relay.testing.yolo_detection.draw_detections(
     font_path, img, dets, thresh, names, last_layer.classes
 )
+
 plt.imshow(img.transpose(1, 2, 0))
+
 plt.show()

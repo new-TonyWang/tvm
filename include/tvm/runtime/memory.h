@@ -67,7 +67,7 @@ class ObjAllocatorBase {
    */
   template <typename T, typename... Args>
   inline ObjectPtr<T> make_object(Args&&... args) {
-    using Handler = typename Derived::template Handler<T>;
+    using Handler = typename Derived::template Handler<T>;//如果你想直接告诉编译器Derived::template是类型而不是变量，只需用typename修饰
     static_assert(std::is_base_of<Object, T>::value, "make can only be used to create Object");
     T* ptr = Handler::New(static_cast<Derived*>(this), std::forward<Args>(args)...);
     ptr->type_index_ = T::RuntimeTypeIndex();
@@ -120,7 +120,7 @@ class SimpleObjAllocator : public ObjAllocatorBase<SimpleObjAllocator> {
       // This is also the right way to get storage type for an object pool.
       StorageType* data = new StorageType();
       new (data) T(std::forward<Args>(args)...);
-      return reinterpret_cast<T*>(data);
+      return reinterpret_cast<T*>(data);//强制类型转换
     }
 
     static Object::FDeleter Deleter() { return Deleter_; }
@@ -190,12 +190,29 @@ class SimpleObjAllocator : public ObjAllocatorBase<SimpleObjAllocator> {
     }
   };
 };
-
+/**
+ * @brief 使用内存管理模块中创建新对象并返回自定义智能指针
+ * 
+ * @tparam T 
+ * @tparam Args 
+ * @param args 
+ * @return ObjectPtr<T> 
+ */
 template <typename T, typename... Args>
 inline ObjectPtr<T> make_object(Args&&... args) {
   return SimpleObjAllocator().make_object<T>(std::forward<Args>(args)...);
 }
 
+/**
+ * @brief 使用内存管理模块中创建新对象并返回自定义智能指针
+ * 
+ * @tparam ArrayType 
+ * @tparam ElemType 
+ * @tparam Args 
+ * @param num_elems 
+ * @param args 
+ * @return ObjectPtr<ArrayType> 
+ */
 template <typename ArrayType, typename ElemType, typename... Args>
 inline ObjectPtr<ArrayType> make_inplace_array_object(size_t num_elems, Args&&... args) {
   return SimpleObjAllocator().make_inplace_array<ArrayType, ElemType>(num_elems,

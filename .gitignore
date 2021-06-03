@@ -202,7 +202,7 @@ cmake-build-debug
 .vs
 
 # Visual Studio Code
-.vscode
+#.vscode
 
 # tmp file
 .nfs*
@@ -233,3 +233,14 @@ conda/pkg
 # nix files
 .envrc
 *.nix
+
+# Downloaded models/datasets
+.tvm_test_data
+.dgl
+.caffe2
+
+.apps/layers_dataset/layers
+*.id[0-9]*
+*.nam
+*.til
+*.params

@@ -308,6 +308,7 @@ def _init_api_prefix(module_name, prefix):
         if fname.find(".") != -1:
             continue
         f = get_global_func(name)
+        
         ff = _get_api(f)
         ff.__name__ = fname
         ff.__doc__ = "TVM PackedFunc %s. " % fname

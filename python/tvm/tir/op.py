@@ -264,7 +264,7 @@ def any(*args, span=None):
 
 
 def all(*args, span=None):
-    """Create a new experssion of the intersection of all conditions in the
+    """Create a new expression of the intersection of all conditions in the
       arguments
 
     Parameters
@@ -750,6 +750,23 @@ def rsqrt(x):
         The result.
     """
     return call_intrin(x.dtype, "tir.rsqrt", x)
+
+
+def clz(x):
+    """Count leading zero bits of an integer x.
+
+    Parameters
+    ----------
+    x : PrimExpr
+        Input 32 or 64 bit integer.
+        The result is undefined if the input is 0.
+
+    Returns
+    -------
+    y : PrimExpr
+        The result.
+    """
+    return call_intrin("int32", "tir.clz", x)
 
 
 def floor(x, span=None):
@@ -1306,7 +1323,9 @@ def floormod(a, b, span=None):
 
 def comm_reducer(fcombine, fidentity, name="reduce"):
     """Create a commutative reducer for reduction.
-
+    第一个参数为比较函数，我们称之为compare，接受的是当前输入和上一个输出，
+    第二个参数为初始化函数，我们称为initial，接受参数类型，初始化原始值。
+    例如，当 compare 接受 reduction 轴上的第一个数据的时候，与他比较的数据还没产生，那我们输入的其实是初始化的值。
     Parameters
     ----------
     fcombine : function(Expr -> Expr -> Expr)

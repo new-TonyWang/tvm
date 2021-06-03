@@ -1,0 +1,1 @@
+cmd='/media/s3lab-1/570c75c9-cb6f-4ce6-bcc5-9f636c7310f3/s3lab-1/workspace/Deeplearning_Framework/TVM/tvm2/cmake/libs/../../3rdparty/libbacktrace/configure;--prefix=/media/s3lab-1/570c75c9-cb6f-4ce6-bcc5-9f636c7310f3/s3lab-1/workspace/Deeplearning_Framework/TVM/tvm2/build_standalone/libbacktrace;--with-pic'

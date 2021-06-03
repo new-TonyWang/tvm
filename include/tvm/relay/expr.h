@@ -30,7 +30,9 @@
 #include <tvm/ir/op.h>
 
 #include <functional>
+#include <stack>
 #include <string>
+#include <utility>
 
 #include "./base.h"
 #include "./type.h"
@@ -55,6 +57,7 @@ using tvm::PrettyPrint;
 class Constant;
 /*!
  * \brief Constant tensor type.
+*  意味着已经到了叶子节点
  */
 class ConstantNode : public ExprNode {
  public:
@@ -293,6 +296,11 @@ class CallNode : public ExprNode {
 class Call : public Expr {
  public:
   /*!
+   * \brief The destructor
+   */
+  ~Call();
+
+  /*!
    * \brief The constructor
    * \param op The operator will be invoked.
    * \param args The arguments of the call.
@@ -310,6 +318,7 @@ class Call : public Expr {
  * \brief Let binding that binds a local var and optionally a type annotation.
  *
  * \note Let is useful to transform the program to be A-normal form.
+ * https://matt.might.net/articles/a-normalization/
  *  where each of the expression corresponds to a let binding.
  *
  *  For developers who are familar with the computational graph.
@@ -376,7 +385,7 @@ class Let : public Expr {
  * let x = if (true) { 1 } else { 0 }; // x is 1
  * let y = if (false) { 1 } else { 0 }; // y is 0
  *
- * \note This is similar to C's ternary operator.
+ * \note This is similar to C's ternary operator.类似三元组
  */
 class If;
 /*! \brief container of If */

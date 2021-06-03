@@ -1,0 +1,48 @@
+@startmindmap relayIR
+*IRModule
+**GlobalVar(main)
+**FunctionNode
+***[Var(input_1, ty=TensorType([1, 28, 28, 1], float32))]
+***TensorType([1, 2],float32)
+***CallNode
+****FunctionNode
+*****[Var(p0, ty=TensorType([1, 2], float32))]
+*****TensorType([1, 2], float32)
+*****CallNode
+******Op(nn.softmax)
+******[Var(p0, ty=TensorType([1, 2], float32))]
+******relay.attrs.SoftmaxAttrs(0x1aab9bc8)
+******[TensorType([1, 2], float32)]
+*****[]
+*****{"Primitive": 1, "hash": "109ca8e633455734"}
+****CallNode
+*****FunctionNode
+******[Var(p0, ty=TensorType([1, (int64)256], float32)), Var(p1, ty=TensorType([1, 256, 2], float32)), Var(p2, ty=TensorType([2], float32))]
+******TensorType([1, 2], float32)
+******CallNode
+*******Op(add)
+*******CallNode，Var(p2, ty=TensorType([2], float32))
+********Op(nn.contrib_dense_pack)
+********[Var(p0, ty=TensorType([1, (int64)256], float32)), Var(p1, ty=TensorType([1, 256, 2], float32))]
+********relay.attrs.DenseAttrs(0x1aa7efb8)
+********[TensorType([1, (int64)256], float32), TensorType([1, 256, 2], float32)]
+*******(nullptr)
+*******[TensorType([1, 2], float32), TensorType([2], float32)]
+
+******[]
+******{"Primitive": 1, "hash": "b35806ad732b9118"}
+*****TensorType([1, 2], float32)
+*****CallNode
+
+*****[]
+*****{"Primitive": 1, "hash": "b35806ad732b9118"}
+*****CallNode
+
+*****Constant
+*****(nullptr)
+*****[]
+****(nullptr)
+****[]
+***[]
+***{"hash": "b2256e08b0405388", "data_layout": "NHWC", "kernel_layout": "HWIO", "out_layout": ""}
+@endmindmap

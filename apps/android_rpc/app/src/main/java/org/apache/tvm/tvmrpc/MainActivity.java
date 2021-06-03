@@ -68,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
     editor.putString("input_port", edProxyPort.getText().toString());
     editor.putString("input_key", key);
     editor.putBoolean("input_switch", isChecked);
-    editor.commit();
+    editor.apply();
 
     Intent intent = new Intent(this, RPCActivity.class);
     intent.putExtra("host", proxyHost);
@@ -78,14 +78,16 @@ public class MainActivity extends AppCompatActivity {
   }
 
   private void setupRelaunch() {
-    final Context context = this;
+    final MainActivity context = this;
     final Switch switchPersistent = findViewById(R.id.switch_persistent);
     final Runnable rPCStarter = new Runnable() {
         public void run() {
             if (switchPersistent.isChecked()) {
               System.err.println("relaunching RPC activity...");
-              Intent intent = ((MainActivity) context).updateRPCPrefs();
+              Intent intent = context.updateRPCPrefs();
+              switchPersistent.setChecked(false);
               startActivity(intent);
+
             }
         }
     };
@@ -109,6 +111,7 @@ public class MainActivity extends AppCompatActivity {
           System.err.println("automatic RPC restart enabled...");
           updateRPCPrefs();
           setupRelaunch();
+          //buttonView.setChecked(false);
         } else {
           System.err.println("automatic RPC restart disabled...");
           updateRPCPrefs();

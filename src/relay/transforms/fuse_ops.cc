@@ -62,6 +62,16 @@ namespace relay {
   - Construct a DAG of dataflow graph for dominator analysis
   - Construct a post-dominator tree which gives immediate post dominator of each node.
   - Run fusion algorithm with the given post-dominator information.
+TVM中融合流程分为三步：
+
+
+
+1 遍历relay树，建立DAG用于后支配树分析；
+
+2 建立后支配树；
+
+3 应用算符融合算法。
+
 
   Note that, because we run analysis on a DAG, we use a single pass post-dominator
   tree construction algorithm via LCA, which is simpler than the full version that handles cycles.
@@ -151,7 +161,14 @@ class IndexedForwardGraph {
 class IndexedForwardGraph::Creator : private ExprVisitor {
  public:
   explicit Creator(support::Arena* arena) : arena_(arena) {}
-
+  /**
+   * 
+   * @brief
+   * 遍历relay树结构并建立DAG图。 
+   * 
+   * @param body 
+   * @return IndexedForwardGraph 
+   */
   IndexedForwardGraph Prepare(const Expr& body) {
     this->Update(body, nullptr, kOpaque);
     this->VisitExpr(body);
@@ -207,7 +224,7 @@ class IndexedForwardGraph::Creator : private ExprVisitor {
     this->Update(op->body, nullptr, kOpaque);
     ExprVisitor::VisitExpr_(op);
   }
-
+  
   void VisitExpr_(const ConstantNode* op) final {
     this->AddNode(op);
     Node* node = graph_.node_map.at(op);
@@ -948,15 +965,39 @@ class FuseMutator : private MixedModeMutator {
   }
 
   Expr MakeNewFunction(GraphPartitioner::Group* group, Type ret_type, Expr body) {
-    // If the function has no call, it is not a primitive function.
-    struct HasCallVisitor : ExprVisitor {
+    // Quickly check special properties of the fused function.
+    // A pass to check if the fused op contains only reshape ops.
+    class CheckReshapeOnly : public ExprVisitor {
+     public:
+      void VisitExpr_(const CallNode* cn) final {
+        this->has_call = true;
+        static auto freshape_op = Op::GetAttrMap<TReshapeOp>("TReshapeOp");
+
+        if (!freshape_op.get(cn->op, false)) {
+          this->reshape_only = false;
+        }
+
+        if (!this->reshape_only) return;
+        ExprVisitor::VisitExpr_(cn);
+      }
+
+      void VisitExpr_(const VarNode* vn) final {
+        if (!vn->type_annotation.defined() || !vn->type_annotation->IsInstance<TensorTypeNode>()) {
+          this->reshape_only = false;
+        }
+      }
+
+      bool reshape_only = true;
       bool has_call = false;
-      void VisitExpr_(const CallNode* op) final { has_call = true; }
     } visitor;
+
     visitor(body);
     const GroupInfo& ginfo = ginfo_[group];
     auto func = Function(ginfo.params, body, ret_type, {});
     func = WithAttr(std::move(func), attr::kPrimitive, tvm::Integer(visitor.has_call));
+    if (visitor.has_call && visitor.reshape_only) {
+      func = WithAttr(std::move(func), attr::kReshapeOnly, tvm::Integer(visitor.reshape_only));
+    }
     return Call(func, ginfo.arguments, Attrs());
   }
 

@@ -1635,7 +1635,7 @@ class Optional : public ObjectRef {
   bool operator==(std::nullptr_t) const { return data_ == nullptr; }
   bool operator!=(std::nullptr_t) const { return data_ != nullptr; }
   auto operator==(const Optional<T>& other) const {
-    // support case where sub-class returns a symbolic ref type.
+    // support case where sub-class returns a symbolic ref type. 
     using RetType = decltype(value() == other.value());
     if (same_as(other)) return RetType(true);
     if (*this != nullptr && other != nullptr) {
@@ -2980,6 +2980,13 @@ class Map : public ObjectRef {
   }
   /*! \return whether array is empty */
   bool empty() const { return size() == 0; }
+  /*! \brief Release reference to all the elements */
+  void clear() {
+    MapNode* n = GetMapNode();
+    if (n != nullptr) {
+      data_ = MapNode::Empty();
+    }
+  }
   /*!
    * \brief set the Map.
    * \param key The index key.

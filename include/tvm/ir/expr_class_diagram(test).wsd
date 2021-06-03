@@ -1,0 +1,101 @@
+@startuml  expr.h
+scale 3
+class Object{
+
+}
+class ObjectPtr{
+    -data_ //指向Object
+}
+
+
+class BaseExprNode{
+
+}
+class BaseExpr{
+
+}
+
+class PrimExprNode{
+
+}
+class PrimExpr{
+
+}
+class RelayExprNode{
+
+}
+class RelayExpr{
+
+}
+class GlobalVarNode{
+
+}
+class GlobalVar{
+
+}
+class RangeNode{
+
+}
+class Range{
+
+}
+class BaseExprNode{
+
+}
+class IntImmNode{
+
+}
+class IntImm{
+
+}
+class FloatImmNode{
+
+}
+class FloatImm{
+
+}
+class BoolImmNode{
+
+}
+class Bool{
+
+}
+class Integer{
+
+}
+
+Object <|-- RangeNode
+Object <|-- BaseExprNode
+BaseExprNode <|-- PrimExprNode
+BaseExprNode <|-- RelayExprNode
+RelayExprNode <|-- GlobalVarNode
+
+PrimExprNode <|-- IntImmNode
+PrimExprNode <|-- FloatImmNode
+PrimExprNode <|-- BoolImmNode
+
+ObjectPtr <|-- Range
+ObjectPtr <|-- BaseExpr
+BaseExpr <|-- PrimExpr
+BaseExpr <|-- RelayExpr
+RelayExpr <|-- GlobalVar
+
+PrimExpr <|-- IntImm
+PrimExpr <|-- FloatImm
+IntImm <|-- Bool
+IntImm <|-- Integer
+
+ObjectPtr "*" *-- "1" Object
+BaseExpr "*" *-- "1" BaseExprNode
+RelayExpr "*" *-- "1" RelayExprNode
+PrimExpr "*" *-- "1" PrimExprNode
+IntImm "*" *-- "1" IntImmNode
+FloatImm "*" *-- "1" FloatImmNode
+Bool "*" *-- "1" IntImmNode
+
+GlobalVar "*" *-- "1" GlobalVarNode
+Range "*" *-- "1" RangeNode
+
+
+
+@enduml

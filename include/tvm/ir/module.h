@@ -299,7 +299,12 @@ class IRModule : public ObjectRef {
   explicit IRModule(ObjectPtr<Object> n) : ObjectRef(n) {}
   /*! \return mutable pointers to the node. */
   IRModuleNode* operator->() const {
-    auto* ptr = get_mutable();
+    auto* ptr = get_mutable();//返回内存中的IRModuleNode对象
+    ICHECK(ptr != nullptr);
+    return static_cast<IRModuleNode*>(ptr);
+  }
+  IRModuleNode* testIRModuleNode(){
+    auto* ptr = get_mutable();//返回内存中的IRModuleNode对象
     ICHECK(ptr != nullptr);
     return static_cast<IRModuleNode*>(ptr);
   }

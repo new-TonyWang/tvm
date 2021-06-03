@@ -88,7 +88,11 @@ class DSOLibrary final : public Library {
   }
 #endif
 };
-
+/**
+ * @brief 
+ * args[0]是so文件路径，
+ * 该函数动态链接模型文件，并创建DSOLibrary
+ */
 TVM_REGISTER_GLOBAL("runtime.module.loadfile_so").set_body([](TVMArgs args, TVMRetValue* rv) {
   auto n = make_object<DSOLibrary>();
   n->Init(args[0]);

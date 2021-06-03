@@ -31,7 +31,7 @@
 #-------------------------------------------------------------------------------
 APP_ABI = all
 
-APP_PLATFORM = android-24
+APP_PLATFORM = android-28
 
 # whether enable OpenCL during compile
 USE_OPENCL = 0

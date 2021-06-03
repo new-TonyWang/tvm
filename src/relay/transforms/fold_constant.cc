@@ -374,7 +374,7 @@ Expr FoldConstant(const Expr& expr, const IRModule& mod) {
   return ConstantFolder(mod).Mutate(expr);
 }
 
-TVM_REGISTER_GLOBAL("relay._transform.FoldConstantExpr").set_body_typed(FoldConstant);
+TVM_REGISTER_GLOBAL("relay._transform.FoldConstantExpr").set_body_typed(FoldConstant);//注册pass，外部可以通过GetPath函数找到
 
 namespace transform {
 

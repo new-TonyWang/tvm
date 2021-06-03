@@ -29,9 +29,9 @@
 #  ./build.sh
 #
 #-------------------------------------------------------------------------------
-APP_ABI = all
+APP_ABI = arm64-v8a
 
-APP_PLATFORM = android-17
+APP_PLATFORM = android-29
 
 # whether enable OpenCL during compile
 USE_OPENCL = 0

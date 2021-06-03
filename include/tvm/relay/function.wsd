@@ -1,0 +1,53 @@
+@startuml function.h
+class BaseFuncNode{
+    
+}
+
+class BaseFunc{
+    
+}
+
+class FunctionNode{
+
+
+*brief Relay Function container
+
+
+
++tvm::Array<Var> params;
+The expression which represents the computation of the function,
+the expression may reference the parameters, and the type of it
+or sub-expressions may reference the type variables.
+  
+  +Expr body;
+  User annotated return type of the function. 
+  
+  +Type ret_type;
+  
+  Type parameters of the function.
+  Enables the function to vary its type based on these.
+  This corresponds to template paramaters in c++'s terminology.
+  
+  This can be usually empty for non-polymorphic functions.
+  
+  +tvm::Array<TypeVar> type_params; 
+}
+
+class Function{
+//Managed reference to FunctionNode.
+ /*!
+   * \brief Constructor
+   * \param params The parameters of the function.
+   * \param body The body of the function.
+   * \param ret_type The return type of the function.
+   * \param ty_params The type parameters.
+   * \param attrs Additional function attributes.
+   * \param span The span of the function.
+   */
+  +TVM_DLL Function(tvm::Array<Var> params, Expr body, Type ret_type, tvm::Array<TypeVar> ty_params,
+                   tvm::DictAttrs attrs = NullValue<DictAttrs>(), Span span = Span());
+
+  +TVM_DEFINE_OBJECT_REF_METHODS(Function, BaseFunc, FunctionNode);
+  +TVM_DEFINE_OBJECT_REF_COW_METHOD(FunctionNode);
+}
+@enduml

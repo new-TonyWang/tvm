@@ -33,6 +33,8 @@ from . import _backend
 logger = logging.getLogger("compile_engine")
 autotvm_logger = logging.getLogger("autotvm")
 
+_first_warning = True
+
 
 @tvm._ffi.register_object("relay.LoweredOutput")
 class LoweredOutput(Object):
@@ -127,7 +129,7 @@ def get_valid_implementations(op, attrs, inputs, out_type, target):
         "one in python with `tvm.relay.op.register_strategy`." % op.name
     )
     with target:
-        strategy = fstrategy(attrs, inputs, out_type, target)
+        strategy = fstrategy(attrs, inputs, out_type, target)#得到一个包含compute 和schedule的策略组合
     analyzer = tvm.arith.Analyzer()
     ret = []
     for spec in strategy.specializations:
@@ -244,8 +246,8 @@ def select_implementation(op, attrs, inputs, out_type, target, use_autotvm=True)
     # Use the implementation with highest plevel
     if workloads[best_plevel_impl] is not None:
         msg = (
-            "Cannot find config for target=%s, workload=%s. A fallback configuration "
-            "is used, which may bring great performance regression."
+            "Cannot find tuning records for:\n    target=%s\n    key=%s\n"
+            "TVM will apply a default schedule which may negatively impact performance."
             % (target, workloads[best_plevel_impl])
         )
         if (
@@ -253,7 +255,16 @@ def select_implementation(op, attrs, inputs, out_type, target, use_autotvm=True)
             and msg not in autotvm.task.DispatchContext.warning_messages
         ):
             autotvm.task.DispatchContext.warning_messages.add(msg)
-            autotvm_logger.warning(msg)
+            global _first_warning
+            if _first_warning:
+                _first_warning = False
+                info_msg = (
+                    "One or more operators have not been tuned. Please tune your model "
+                    "for better performance. Use DEBUG logging level to see more details."
+                )
+                autotvm_logger.warning(info_msg)
+            autotvm_logger.debug(msg)
+
     logger.info(
         "Using %s for %s based on highest priority (%s)",
         best_plevel_impl.name,

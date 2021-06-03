@@ -19,7 +19,7 @@
 
 # Setup build environment
 TVM_ROOT=$(shell cd ../..; pwd)
-CRT_ROOT ?= ../../build/standalone_crt
+CRT_ROOT ?= ../../build_standalone/standalone_crt
 ifeq ($(shell ls -lhd $(CRT_ROOT)),)
 $(error "CRT not found. Ensure you have built the standalone_crt target and try again")
 endif

@@ -190,17 +190,11 @@ void DeviceAPI::CopyDataFromTo(const void* from, size_t from_offset, void* to, s
 
 void DeviceAPI::FreeWorkspace(Device dev, void* ptr) { FreeDataSpace(dev, ptr); }
 
-TVMStreamHandle DeviceAPI::CreateStream(Device dev) {
-  LOG(FATAL) << "Device does not support stream api.";
-  return nullptr;
-}
+TVMStreamHandle DeviceAPI::CreateStream(Device dev) { return nullptr; }
 
-void DeviceAPI::FreeStream(Device dev, TVMStreamHandle stream) {
-  LOG(FATAL) << "Device does not support stream api.";
-}
+void DeviceAPI::FreeStream(Device dev, TVMStreamHandle stream) {}
 
 void DeviceAPI::SyncStreamFromTo(Device dev, TVMStreamHandle event_src, TVMStreamHandle event_dst) {
-  LOG(FATAL) << "Device does not support stream api.";
 }
 
 //--------------------------------------------------------
@@ -477,7 +471,8 @@ int TVMFuncCall(TVMFunctionHandle func, TVMValue* args, int* arg_type_codes, int
   API_BEGIN();
 
   TVMRetValue rv;
-  (*static_cast<const PackedFunc*>(func)).CallPacked(TVMArgs(args, arg_type_codes, num_args), &rv);
+  const PackedFunc* pFunc = static_cast<const PackedFunc*>(func);
+  (*pFunc).CallPacked(TVMArgs(args, arg_type_codes, num_args), &rv);
   // handle return string.
   if (rv.type_code() == kTVMStr || rv.type_code() == kTVMDataType || rv.type_code() == kTVMBytes) {
     TVMRuntimeEntry* e = TVMAPIRuntimeStore::Get();

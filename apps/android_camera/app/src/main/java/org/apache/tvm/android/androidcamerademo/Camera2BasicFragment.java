@@ -454,44 +454,49 @@ public class Camera2BasicFragment extends Fragment {
                 .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
                 .build();
 
-        imageAnalysis.setAnalyzer(threadPoolExecutor, image -> {
-            Log.e(TAG, "w: " + image.getWidth() + " h: " + image.getHeight());
-            if (mRunClassifier && isProcessingDone.tryAcquire()) {
-                long t1 = SystemClock.uptimeMillis();
-                //float[] chw = getFrame(image);
-                //float[] chw = YUV_420_888_toRGBPixels(image);
-                float[] chw = getFrame(image);
-                if (chw != null) {
-                    long t2 = SystemClock.uptimeMillis();
-                    String[] results = inference(chw);
-                    long t3 = SystemClock.uptimeMillis();
-                    StringBuilder msgBuilder = new StringBuilder();
-                    for (int l = 1; l < 5; l++) {
-                        msgBuilder.append(results[l]).append("\n");
+        imageAnalysis.setAnalyzer(threadPoolExecutor, new ImageAnalysis.Analyzer() {
+            @Override
+            public void analyze(@NonNull ImageProxy image) {
+
+                    Log.e(TAG, "w: " + image.getWidth() + " h: " + image.getHeight());
+                    if (mRunClassifier && isProcessingDone.tryAcquire()) {
+                        long t1 = SystemClock.uptimeMillis();
+                        //float[] chw = getFrame(image);
+                        //float[] chw = YUV_420_888_toRGBPixels(image);
+                        float[] chw = getFrame(image);
+                        if (chw != null) {
+                            long t2 = SystemClock.uptimeMillis();
+                            String[] results = inference(chw);
+                            long t3 = SystemClock.uptimeMillis();
+                            StringBuilder msgBuilder = new StringBuilder();
+                            for (int l = 1; l < 5; l++) {
+                                msgBuilder.append(results[l]).append("\n");
+                            }
+                            String msg = msgBuilder.toString();
+                            msg += "getFrame(): " + (t2 - t1) + "ms" + "\n";
+                            msg += "inference(): " + (t3 - t2) + "ms" + "\n";
+                            String finalMsg = msg;
+                            getActivity().runOnUiThread(() -> {
+                                mResultView.setText(String.format("model: %s \n %s", mCurModel, results[0]));
+                                mInfoView.setText(finalMsg);
+                            });
+                        }
+                        isProcessingDone.release();
                     }
-                    String msg = msgBuilder.toString();
-                    msg += "getFrame(): " + (t2 - t1) + "ms" + "\n";
-                    msg += "inference(): " + (t3 - t2) + "ms" + "\n";
-                    String finalMsg = msg;
-                    this.getActivity().runOnUiThread(() -> {
-                        mResultView.setText(String.format("model: %s \n %s", mCurModel, results[0]));
-                        mInfoView.setText(finalMsg);
-                    });
+                    image.close();
                 }
-                isProcessingDone.release();
-            }
-            image.close();
+
         });
         return v;
     }
 
     private void bindPreview(@NonNull ProcessCameraProvider cameraProvider) {
         @SuppressLint("RestrictedApi") Preview preview = new Preview.Builder()
-                .setMaxResolution(new Size(800, 800))
+                .setMaxResolution(new Size(1000, 1000))
                 .setTargetName("Preview")
                 .build();
 
-        preview.setSurfaceProvider(previewView.getPreviewSurfaceProvider());
+        preview.setSurfaceProvider(previewView.getSurfaceProvider());
         CameraSelector cameraSelector =
                 new CameraSelector.Builder()
                         .requireLensFacing(CameraSelector.LENS_FACING_BACK)

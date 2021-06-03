@@ -128,7 +128,7 @@ def main(model_str, output_path):
 if __name__ == "__main__":
     if environ.get("TVM_NDK_CC") is None:
         raise RuntimeError("Require environment variable TVM_NDK_CC")
-    models_path = Path().absolute().parent.joinpath("app/src/main/assets/models/")
+    models_path = Path().absolute().joinpath("app/src/main/assets/models/")
     if not models_path.exists():
         models_path.mkdir()
     models = {

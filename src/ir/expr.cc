@@ -168,7 +168,7 @@ TVM_STATIC_IR_FUNCTOR(ReprPrinter, vtable)
         }
         p->Print(op->at(i));
       }
-      p->stream << ']';
+      p->stream << "]";
     });
 
 TVM_STATIC_IR_FUNCTOR(ReprPrinter, vtable)
@@ -187,7 +187,7 @@ TVM_STATIC_IR_FUNCTOR(ReprPrinter, vtable)
         }
         p->Print(it->second);
       }
-      p->stream << '}';
+      p->stream << "}\n";
     });
 
 TVM_REGISTER_GLOBAL("ir.DebugPrint").set_body_typed([](ObjectRef ref) {

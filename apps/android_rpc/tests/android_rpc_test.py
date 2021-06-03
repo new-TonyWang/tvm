@@ -29,9 +29,11 @@ from tvm.contrib import utils, ndk
 import numpy as np
 
 # Set to be address of tvm proxy.
-tracker_host = os.environ["TVM_TRACKER_HOST"]
-tracker_port = int(os.environ["TVM_TRACKER_PORT"])
-key = "android"
+#tracker_host = os.environ["TVM_TRACKER_HOST"]
+#tracker_port = int(os.environ["TVM_TRACKER_PORT"])
+tracker_host = "0.0.0.0"
+tracker_port = 9191
+key = "mi"
 
 # Change target configuration.
 # Run `adb shell cat /proc/cpuinfo` to find the arch.
@@ -51,17 +53,18 @@ def test_rpc_module():
     B = te.compute(A.shape, lambda *i: A(*i) + 1.0, name="B")
     a_np = np.random.uniform(size=1024).astype(A.dtype)
     temp = utils.tempdir()
-
+    print("Establish remote connection with target hardware")
     # Establish remote connection with target hardware
     tracker = rpc.connect_tracker(tracker_host, tracker_port)
     remote = tracker.request(key, priority=0, session_timeout=60)
-
+    print("Compile the Graph for CPU target")
     # Compile the Graph for CPU target
     s = te.create_schedule(B.op)
     xo, xi = s[B].split(B.op.axis[0], factor=64)
     s[B].parallel(xi)
     s[B].pragma(xo, "parallel_launch_point")
     s[B].pragma(xi, "parallel_barrier_when_finish")
+    print("build the Graph for CPU target,name=myadd_cpu")
     f = tvm.build(s, [A, B], target, name="myadd_cpu")
     path_dso_cpu = temp.relpath("cpu_lib.so")
     f.export_library(path_dso_cpu, ndk.create_shared)

@@ -32,11 +32,11 @@
 #include <tvm/relay/function.h>
 #include <tvm/relay/op.h>
 
-#include <stack>
+#include <deque>
 #include <string>
 #include <unordered_map>
 #include <utility>
-
+#include <vector>
 namespace tvm {
 namespace relay {
 
@@ -83,6 +83,7 @@ class ExprFunctor<R(const Expr& n, Args...)> {
   R operator()(const Expr& n, Args... args) { return VisitExpr(n, std::forward<Args>(args)...); }
   /*!
    * \brief The functor call.
+   对节点进行分发，调用不同节点类型的VisitExpr函数
    * \param n The expression node.
    * \param args Additional arguments.
    * \return The result of the call
@@ -139,11 +140,15 @@ class ExprFunctor<R(const Expr& n, Args...)> {
 };
 
 /*!
+ * 
  * \brief A simple visitor wrapper around ExprFunctor.
  *  Recursively visit the content.
- *
+ * 
  * ExprVisitor treats Expr as dataflow graph,
  * and only visit each Expr node once.
+ * 不修改程序，仅用于程序分析
+ * ExprVisitor is for passes that don’t modify the program ,
+ * and instead perform program analyses and collect information. 
  */
 class ExprVisitor : public ::tvm::relay::ExprFunctor<void(const Expr& n)> {
  public:
@@ -179,6 +184,7 @@ class ExprVisitor : public ::tvm::relay::ExprFunctor<void(const Expr& n)> {
  * ExprMutator treats Expr as dataflow graph, and only Mutate each Expr once.
  * The mutated results are memoized in a map and reused so that
  * local transformation on the dataflow preserves the graph structure.
+ * 对pass进行某些程度的变换
  */
 class ExprMutator : public ::tvm::relay::ExprFunctor<Expr(const Expr&)> {
  public:
@@ -228,6 +234,8 @@ class ExprMutator : public ::tvm::relay::ExprFunctor<Expr(const Expr&)> {
  * MixedModeVisitor provides the same recursive API as ExprVisitor, and uses
  * recursion to traverse most forms of the IR, but under the hood it expands nested dataflow regions
  * of the graph and processes them iteratatively to prevent stack overflows
+ * MixedModeVisitor提供了与ExprVisitor相同的递归API，并使用递归遍历大多数形式的IR，
+ * 但它在后台扩展了图的嵌套数据流区域，并对其进行迭代处理，以防止堆栈溢出
  */
 class MixedModeVisitor : public ::tvm::relay::ExprVisitor {
  public:
@@ -262,21 +270,24 @@ class MixedModeVisitor : public ::tvm::relay::ExprVisitor {
 };
 
 /*! \brief Non-recursive DFS Graph Traversal for Custom Rewriting Passes
- *
+ * 非递归，深度优先遍历所有节点
  * MixedModeMutator treats Expr as dataflow graph, and only Rewrites each Expr once.
  * The mutated results are memoized in a map and reused so that
  * local transformation on the dataflow preserves the graph structure.
- *
+ * 仅能重写每一个Expr一次
  * MixedModeMutator provides the same recursive API as ExprMutator, and uses
  * recursion to traverse most forms of the IR, but under the hood it expands nested dataflow regions
  * of the graph and processes them iteratatively to prevent stack overflows
- *
+ * 可以使用非递归的形式进行遍历
  * Uses Rewrite_ API of ExprRewriter for a cleaner split between recrusive and non-recursive
  * behavior.
+ * 
  */
 class MixedModeMutator : public ::tvm::relay::ExprMutator {
  public:
+  MixedModeMutator(bool pre = false) : pre_{pre} {};
   Expr VisitExpr(const Expr& expr) final;
+
   virtual Expr DispatchVisitExpr(const Expr& expr);
   Expr VisitExpr_(const TupleNode* op) final { return Rewrite(op); };
   Expr VisitExpr_(const CallNode* call_node) final { return Rewrite(call_node); };
@@ -294,6 +305,7 @@ class MixedModeMutator : public ::tvm::relay::ExprMutator {
   virtual Expr Rewrite_(const TupleGetItemNode* pre, const Expr& post) { return post; }
 
  protected:
+  bool pre_;
   /*! \brief Implement Rewrite API by calling ExprMutator's VisitExpr_(op) to get a `post` node with
    * changed inputs.
    */
@@ -411,71 +423,81 @@ Expr PostOrderRewrite(const Expr& expr, ExprRewriter* rewriter);
 void PostOrderVisit(const Expr& node, std::function<void(const Expr&)> fvisit);
 
 /*!
+ * \brief A struct to keep info of traversed expr in ExpandDataflow function
+ */
+struct v_info {
+  explicit v_info(Expr node_) : node{node_} {}
+  v_info(Expr node_, bool children_expanded_)
+      : node{node_}, children_expanded{children_expanded_} {};
+  Expr node{};
+  bool children_expanded{false};
+};
+
+/*!
  * \brief A function to iteratively traverse dataflow regions of a graph
  *
  * ExpandDataflow manually manages a stack and performs DFS to determine the processing
  * order of nodes in an input graph.
  *
- * If it finds a dataflow node (Call, Tuple, TupleGetItem), it checks if the arguments to that node
- * need to be processed via fcheck_visited. If so, the function pushes those arguments to the stack
- * and continues iteratively to process the top of the stack. When it finds a node that doesn't
- * match the dataflow types, or a node who's inputs have all been processed, it visits the current
- * leaf via fvisit_leaf.
+ * By default fexpand_expr implemented in a way that if it finds a dataflow node (Call, Tuple,
+ * TupleGetItem), it checks if the arguments to that node need to be processed via fcheck_visited.
+ * If so, the function pushes those arguments to the stack and continues iteratively to process
+ * the top of the stack. When it finds a node that doesn't match the dataflow types, or a node who's
+ * inputs have all been processed, it visits the current leaf via fvisit_leaf.
  *
  * This function should be used internally to other classes to implement mixed-mode traversals. The
  * expectation is that fvisit_leaf will perform recursive analysis within mixed-mode traversal if it
  * hits a non-dataflow node.
  *
- * fcheck_visited and fvisit_leaf are templated to encourage compiler inlining.
+ * fcheck_visited, fvisit_leaf and fexpand_expr are templated to encourage reusing.
  */
-template <typename FCheckVisited, typename FVisitLeaf>
-void ExpandDataflow(Expr expr, FCheckVisited fcheck_visited, FVisitLeaf fvisit_leaf) {
-  std::stack<std::pair<Expr, bool>> stack;
+template <typename FCheckVisited, typename FVisitLeaf, typename FExpandExpr>
+void ExpandDataflow(Expr expr, FCheckVisited fcheck_visited, FVisitLeaf fvisit_leaf,
+                    FExpandExpr fexpand_expr) {
+  std::deque<v_info> stack;
   auto fpush_to_stack = [&fcheck_visited, &stack](const Expr& expr) {
-    // The second state of the stack indicate whether the child has been
-    // expanded in the pre-order.
-    // NOTE: function will be inlined.
     if (!fcheck_visited(expr)) {
-      stack.push({expr, false});
+      stack.emplace_front(v_info(expr));
     }
   };
+
   fpush_to_stack(expr);
   while (stack.size() > 0) {
-    auto node = stack.top().first;
-    if (fcheck_visited(node)) {
-      // if this node was visited through another path
-      // after being added to the stack ignore it.
-      stack.pop();
-    } else if (stack.top().second) {
-      // all the children have already been expanded.
-      // we can just run post order visit on it.
-      fvisit_leaf(node);
-      stack.pop();
-    } else if (const CallNode* op = node.as<CallNode>()) {
-      // mark expanded = true
-      stack.top().second = true;
-      // push the children to the stack in reverse order
-      // to match recursive processing order
-      for (auto it = op->args.rbegin(); it != op->args.rend(); ++it) {
-        fpush_to_stack(*it);
-      }
-      fpush_to_stack(op->op);
-    } else if (const TupleNode* op = node.as<TupleNode>()) {
-      stack.top().second = true;
-      // push the children to the stack in reverse order
-      // to match recursive processing order
-      for (auto it = op->fields.rbegin(); it != op->fields.rend(); ++it) {
-        fpush_to_stack(*it);
-      }
-    } else if (const TupleGetItemNode* op = node.as<TupleGetItemNode>()) {
-      stack.top().second = true;
-      fpush_to_stack(op->tuple);
+    v_info* front = &stack.front();
+    if (fcheck_visited(front->node)) {
+      stack.pop_front();
+    } else if (front->children_expanded) {
+      fvisit_leaf(front->node);
+      // TODO(d-smirnov): this is for compatibility with current implementation of MixedModeVisitor
+      stack.pop_front();
     } else {
-      // No need to expand the children directly run visit.
-      fvisit_leaf(node);
-      stack.pop();
+      front->children_expanded = true;
+      for (auto e : fexpand_expr(front->node)) {
+        fpush_to_stack(e);
+      }
     }
   }
+}
+
+template <typename FCheckVisited, typename FVisitLeaf>
+void ExpandDataflow(Expr expr, FCheckVisited fcheck_visited, FVisitLeaf fvisit_leaf) {
+  auto fexpand_expr = [](const Expr& expr) {
+    std::vector<Expr> result;
+    if (const CallNode* op = expr.as<CallNode>()) {
+      for (auto it = op->args.rbegin(); it != op->args.rend(); ++it) {
+        result.push_back(*it);
+      }
+      result.push_back(op->op);
+    } else if (const TupleNode* op = expr.as<TupleNode>()) {
+      for (auto it = op->fields.rbegin(); it != op->fields.rend(); ++it) {
+        result.push_back(*it);
+      }
+    } else if (const TupleGetItemNode* op = expr.as<TupleGetItemNode>()) {
+      result.push_back(op->tuple);
+    }
+    return result;
+  };
+  ExpandDataflow(expr, fcheck_visited, fvisit_leaf, fexpand_expr);
 }
 
 void ExpandANormalForm(const LetNode* op, std::function<void(const LetNode*)> pre_visit,

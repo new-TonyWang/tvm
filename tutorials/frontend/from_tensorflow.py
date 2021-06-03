@@ -72,7 +72,7 @@ label_map_url = os.path.join(repo_base, label_map)
 # Use these commented settings to build for cuda.
 # target = tvm.target.Target("cuda", host="llvm")
 # layout = "NCHW"
-# dev = tvm.gpu(0)
+# dev = tvm.cuda(0)
 target = tvm.target.Target("llvm", host="llvm")
 layout = None
 dev = tvm.cpu(0)
@@ -100,8 +100,8 @@ with tf_compat_v1.gfile.GFile(model_path, "rb") as f:
     # Call the utility to import the graph definition into default graph.
     graph_def = tf_testing.ProcessGraphDefParam(graph_def)
     # Add shapes to the graph.
-    with tf_compat_v1.Session() as sess:
-        graph_def = tf_testing.AddShapesToGraphDef(sess, "softmax")
+    # with tf_compat_v1.Session() as sess:
+    #     graph_def = tf_testing.AddShapesToGraphDef(sess, "softmax")
 
 ######################################################################
 # Decode image
@@ -143,6 +143,7 @@ print("Tensorflow protobuf imported to relay frontend.")
 #   lib: target library which can be deployed on target with TVM runtime.
 
 with tvm.transform.PassContext(opt_level=3):
+    #opt_module,params = relay.optimize(mod,target,params);
     lib = relay.build(mod, target, params=params)
 
 ######################################################################

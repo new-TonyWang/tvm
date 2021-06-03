@@ -255,7 +255,7 @@ class TVM_DLL Object {
   // The fields of the base object cell.
   /*! \brief Type index(tag) that indicates the type of the object. */
   uint32_t type_index_{0};
-  /*! \brief The internal reference counter */
+  /*! \brief The internal reference counter 引用计数*/
   RefCounterType ref_counter_{0};
   /*!
    * \brief deleter of this object to enable customized allocation.
@@ -290,10 +290,10 @@ class TVM_DLL Object {
                                              bool type_child_slots_can_overflow);
 
   // reference counter related operations
-  /*! \brief developer function, increases reference counter. */
+  /*! \brief developer function, increases reference counter. 引用计数加一*/
   inline void IncRef();
   /*!
-   * \brief developer function, decrease reference counter.
+   * \brief developer function, decrease reference counter.引用计数减一
    * \note The deleter will be called when ref_counter_ becomes zero.
    */
   inline void DecRef();
@@ -798,7 +798,25 @@ inline void Object::DecRef() {
   }
 }
 
-inline int Object::use_count() const { return ref_counter_.load(std::memory_order_relaxed); }
+inline int Object::use_count() const { return ref_counter_.load(std::memory_order_relaxed); 
+/*
+  typedef enum memory_order
+    {
+      memory_order_relaxed,//只保证当前操作的原子性，不考虑线程间的同步，其他线程可能读到新值，也可能读到旧值。
+      memory_order_consume,//对当前要读取的内存施加 release 语义（store），在代码中这条语句后面所有与这块内存有关的读写操作都无法被重排到这个操作之前
+      memory_order_acquire,//对读取施加 acquire 语义（load），在代码中这条语句后面所有读写操作都无法重排到这个操作之前，即 load-store 不能重排为 store-load, load-load 也无法重排为 load-load
+      memory_order_release,
+      //对写入施加 release 语义（store），在代码中这条语句前面的所有读写操作都无法被重排到这个操作之后，即 store-store 不能重排为 store-store, load-store 也无法重排为 store-load
+      //当前线程内的所有写操作，对于其他对这个原子变量进行 acquire 的线程可见
+      //当前线程内的与这块内存有关的所有写操作，对于其他对这个原子变量进行 consume 的线程可见
+      memory_order_acq_rel,//对读取和写入施加 acquire-release 语义，无法被重排
+      memory_order_seq_cst
+      //如果是读取就是 acquire 语义，如果是写入就是 release 语义，如果是读取+写入就是 acquire-release 语义
+      //同时会对所有使用此 memory order 的原子操作进行同步，所有线程看到的内存操作的顺序都是一样的，就像单个线程在执行所有线程的指令一样
+    } memory_order;
+*/
+
+}
 
 #else
 

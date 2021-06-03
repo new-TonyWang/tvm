@@ -1,0 +1,205 @@
+@startuml expr.h
+' !includeurl https://raw.githubusercontent.com/xuanye/plantuml-style-c4/master/core.puml
+' ' uncomment the following line and comment the first to use locally
+' '!include core.puml
+scale 2
+class ExprNode {
+    // tvm::RelayExprNode
+    +startTime: DateTime
+    +venue: string
+    +registrationClosed: boolean
+    -notifyAttendes()
+}
+
+class Expr {
+    // tvm::RelayExpr
+    +startTime: DateTime
+    +venue: string
+    +registrationClosed: boolean
+    -notifyAttendes()
+}
+ 
+class ConstantNode {
+ brief Constant tensor, backed by an NDArray on the cpu(0) device.
+ 
+ note Scalar constants are represented by rank-0 const tensor.
+ Constant folding are handled uniformly via Tensor types.
+ 
+}
+
+class Constant {
+ /*!
+ * \brief Constant tensor, backed by an NDArray on the cpu(0) device.
+ *
+ * \note Scalar constants are represented by rank-0 const tensor.
+ *  Constant folding are handled uniformly via Tensor types.
+ */
+}
+
+class TupleNode {
+ /*! \brief Tuple container */
+}
+
+class Tuple {
+ /*! \brief Tuple of multiple Exprs */
+}
+
+class ValNode {
+ /*! \brief Container for Var */
+}
+
+class Val {
+ /*!
+ * \brief Local variables used in the let expression.
+ *
+ * Its semantics are similar to tvm.Var node used in TVM's low level
+ * tensor expression language.
+ *
+ * \note Each Var is bind only once and is immutable.
+ */
+}
+
+class CallNode {
+ /*! \brief Call container. */
+}
+
+class Call {
+ /*
+ * \brief Call corresponds to operator invocation.
+ *  Corresponds to the operator in computational graph terminology.
+ */
+
+ +TVM_DLL Call(Expr op, Array<Expr> args, Attrs attrs = Attrs(),
+               Array<Type> type_args = Array<Type>(), Span span = Span());
+}
+
+class LetNode {
+ /*! \brief A binding of a sub-network. */
+}
+
+class Let {
+ /*!
+ * \brief Let binding that binds a local var and optionally a type annotation.
+ *
+ * \note Let is useful to transform the program to be A-normal form.
+ * https://matt.might.net/articles/a-normalization/
+ *  where each of the expression corresponds to a let binding.
+ *
+ *  For developers who are familar with the computational graph.
+ *  Each of the let can be viewed as a operator node in the computational graph.
+ *  Traversing the list of let bindings is similar to running
+ * PostDFS-order(topo-order) traversal on the computational graph.
+ */
+}
+
+class IfNode {
+ /*! \brief container of If */
+}
+
+class If {
+ /*!
+ * \brief Condition expression
+ *
+ * Unlike traditional statement `if`s, the if evalutes
+ * to the result of the branch taken.
+ *
+ * let x = if (true) { 1 } else { 0 }; // x is 1
+ * let y = if (false) { 1 } else { 0 }; // y is 0
+ *
+ * \note This is similar to C's ternary operator.类似三元组
+ */
+}
+
+class TupleGetItemNode {
+ 
+}
+
+class TupleGetItem {
+ /*! \brief Get index-th field out of a tuple. */
+}
+
+class RefCreateNode {
+ 
+}
+
+class RefCreate {
+ /*! \brief Create a new Reference out of initial value. */
+}
+
+class RefReadNode {
+ 
+}
+
+class RefRead {
+ /*! \brief Get value out of Reference. */
+}
+
+class RefWriteNode {
+ 
+}
+
+class RefWrite {
+ 
+}
+
+class TempExprNode {
+ /*!
+ * \brief Base class of the temporary expression.
+ *
+ * TempExprs are pass specific expression that can be
+ * useful to define intermediate result in the
+ * rewriting pass such as layout or type transformation.
+ *
+ * Subclass TempExprNode allows us to pattern match on
+ * specific kind of TempExpr and use them for expression rewriting.
+ *
+ * TempExpr should only be used within a pass,
+ */
+}
+
+class TempExpr {
+ 
+}
+
+ExprNode <|-- ConstantNode
+ExprNode <|-- TupleNode
+ExprNode <|-- VarNode
+ExprNode <|-- CallNode
+ExprNode <|-- LetNode
+ExprNode <|-- IfNode
+ExprNode <|-- TupleGetItemNode
+ExprNode <|-- RefCreateNode
+ExprNode <|-- RefReadNode
+ExprNode <|-- RefWriteNode
+ExprNode <|-- TempExprNode
+ExprNode <|-- ValNode
+
+Expr <|-- Constant
+Expr <|-- Tuple
+Expr <|-- Var
+Expr <|-- Call
+Expr <|-- Let
+Expr <|-- If
+Expr <|-- TupleGetItem
+Expr <|-- RefCreate
+Expr <|-- RefRead
+Expr <|-- RefWrite
+Expr <|-- TempExpr
+Expr <|-- Val
+
+ExprNode "1" *-- "*" Expr
+ConstantNode "1" *-- "*" Constant
+TupleNode "1" *-- "*" Tuple
+VarNode "1" *-- "*" Var
+CallNode "1" *-- "*" Call
+LetNode "1" *-- "*" Let
+IfNode "1" *-- "*" If
+TupleGetItemNode "1" *-- "*" TupleGetItem
+RefCreateNode "1" *-- "*" RefCreate
+RefReadNode "1" *-- "*" RefRead
+RefWriteNode "1" *-- "*" RefWrite
+TempExprNode "1" *-- "*" TempExpr
+ValNode "1" *-- "*" Val
+
+
+@enduml

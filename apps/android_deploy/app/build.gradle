@@ -31,7 +31,7 @@ task buildJni(type: Exec, description: 'Build JNI libs') {
 }
 
 tasks.withType(JavaCompile) {
-    compileTask -> compileTask.dependsOn buildJni
+    //compileTask -> compileTask.dependsOn buildJni
 }
 
 android {

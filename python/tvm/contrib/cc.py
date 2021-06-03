@@ -76,6 +76,8 @@ def create_executable(output, objects, options=None, cc="g++"):
     else:
         raise ValueError("Unsupported platform")
 
+        
+
 
 def get_target_by_dump_machine(compiler):
     """Functor of get_target_triple that can get the target triple using compiler.

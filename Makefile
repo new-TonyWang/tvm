@@ -52,7 +52,7 @@ cpptest:
 	@mkdir -p $(OUTPUTDIR) && cd $(OUTPUTDIR) && cmake .. && $(MAKE) cpptest
 
 crttest:
-	@mkdir -p build && cd build && cmake .. && $(MAKE) crttest
+	@mkdir -p $(OUTPUTDIR) && cd $(OUTPUTDIR) && cmake .. && $(MAKE) crttest
 
 # EMCC; Web related scripts
 EMCC_FLAGS= -std=c++11\
@@ -127,7 +127,7 @@ JVM_TEST_ARGS := $(if $(JVM_TEST_ARGS),$(JVM_TEST_ARGS),-DskipTests -Dcheckstyle
 
 jvmpkg:
 	(cd $(ROOTDIR)/jvm; \
-		mvn clean package -P$(JVM_PKG_PROFILE) -Dcxx="$(CXX)" \
+		mvn clean package -e -P$(JVM_PKG_PROFILE) -Dcxx="$(CXX)" \
 			-Dcflags="$(PKG_CFLAGS)" -Dldflags="$(PKG_LDFLAGS)" \
 			-Dcurrent_libdir="$(ROOTDIR)/$(OUTPUTDIR)" $(JVM_TEST_ARGS))
 jvminstall:

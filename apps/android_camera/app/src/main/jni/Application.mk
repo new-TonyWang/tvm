@@ -28,7 +28,7 @@ include $(config)
 # We target every architecture except armeabi here, for two reasons:
 # 1) armeabi is deprecated in NDK r16 and removed in r17
 # 2) vulkan is not supported in armeabi
-APP_ABI ?= all
+#APP_ABI ?= all
 APP_STL := c++_shared
 
 APP_CPPFLAGS += -DTVM_LOG_STACK_TRACE=0 -DTVM4J_ANDROID=1 -std=c++14 -Oz -frtti

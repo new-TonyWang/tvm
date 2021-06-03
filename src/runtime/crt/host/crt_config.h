@@ -28,7 +28,7 @@
 #define TVM_CRT_LOG_LEVEL TVM_CRT_LOG_LEVEL_DEBUG
 
 /*! Support low-level debugging in MISRA-C runtime */
-#define TVM_CRT_DEBUG 0
+#define TVM_CRT_DEBUG 1
 
 /*! Maximum supported dimension in NDArray */
 #define TVM_CRT_MAX_NDIM 6
@@ -43,10 +43,10 @@
 #define TVM_CRT_MAX_REGISTERED_MODULES 2
 
 /*! Size of the global function registry, in bytes. */
-#define TVM_CRT_GLOBAL_FUNC_REGISTRY_SIZE_BYTES 256
+#define TVM_CRT_GLOBAL_FUNC_REGISTRY_SIZE_BYTES 512
 
 /*! Maximum packet size, in bytes, including the length header. */
-#define TVM_CRT_MAX_PACKET_SIZE_BYTES 64000
+#define TVM_CRT_MAX_PACKET_SIZE_BYTES 8 * 1024
 
 /*! \brief Maximum length of a PackedFunc function name. */
 #define TVM_CRT_MAX_FUNCTION_NAME_LENGTH_BYTES 30

@@ -23,10 +23,14 @@
  */
 #include <dlpack/dlpack.h>
 #include <tvm/runtime/module.h>
-#include <tvm/runtime/packed_func.h>
-#include <tvm/runtime/registry.h>
-
+#include "tvm/runtime/packed_func.h"
+#include "tvm/runtime/registry.h"
+#include <vector>
 #include <cstdio>
+#include <fcntl.h>
+#include <stdio.h>
+#include <unistd.h>
+#include <iostream>
 
 void Verify(tvm::runtime::Module mod, std::string fname) {
   // Get the function from the module.
@@ -50,7 +54,7 @@ void Verify(tvm::runtime::Module mod, std::string fname) {
   int dtype_code = kDLFloat;
   int dtype_bits = 32;
   int dtype_lanes = 1;
-  int device_type = kDLCPU;
+  int device_type = kDLCUDA;
   int device_id = 0;
   int64_t shape[1] = {10};
   TVMArrayAlloc(shape, ndim, dtype_code, dtype_bits, dtype_lanes, device_type, device_id, &x);
@@ -73,9 +77,10 @@ void Verify(tvm::runtime::Module mod, std::string fname) {
 
 void DeploySingleOp() {
   // Normally we can directly
-  tvm::runtime::Module mod_dylib = tvm::runtime::Module::LoadFromFile("lib/test_addone_dll.so");
-  LOG(INFO) << "Verify dynamic loading from test_addone_dll.so";
+  tvm::runtime::Module mod_dylib = tvm::runtime::Module::LoadFromFile(
+      "/media/s3lab-1/570c75c9-cb6f-4ce6-bcc5-9f636c7310f3/s3lab-1/workspace/python/tvm/defuse_module/from_tensorflow_mod_llvm.so");
   Verify(mod_dylib, "addone");
+  
   // For libraries that are directly packed as system lib and linked together with the app
   // We can directly use GetSystemLib to get the system wide library.
   LOG(INFO) << "Verify load function from system lib";
@@ -86,39 +91,67 @@ void DeploySingleOp() {
 void DeployGraphExecutor() {
   LOG(INFO) << "Running graph executor...";
   // load in the library
+  int a;
+  std::cin>>a;
+  //DLDevice dev{kDLGPU, 0};
   DLDevice dev{kDLCPU, 0};
-  tvm::runtime::Module mod_factory = tvm::runtime::Module::LoadFromFile("lib/test_relay_add.so");
-  // create the graph executor module
+  tvm::runtime::Module mod_factory = tvm::runtime::Module::LoadFromFile(
+      "/media/s3lab-1/570c75c9-cb6f-4ce6-bcc5-9f636c7310f3/s3lab-1/workspace/Deeplearning_Framework/TVM/tvm2/apps/howto_deploy/lib/mnist_llvm_x86.so");
+  // create the graph runtime module
+
   tvm::runtime::Module gmod = mod_factory.GetFunction("default")(dev);
   tvm::runtime::PackedFunc set_input = gmod.GetFunction("set_input");
   tvm::runtime::PackedFunc get_output = gmod.GetFunction("get_output");
   tvm::runtime::PackedFunc run = gmod.GetFunction("run");
-
   // Use the C++ API
-  tvm::runtime::NDArray x = tvm::runtime::NDArray::Empty({2, 2}, DLDataType{kDLFloat, 32, 1}, dev);
+  //tvm::runtime::NDArray x = tvm::runtime::NDArray::Empty({2, 2}, DLDataType{kDLFloat, 32, 1}, dev);
+   tvm::runtime::NDArray x = tvm::runtime::NDArray::Empty({28, 28,1}, DLDataType{kDLBfloat, 32, 1}, dev);
   tvm::runtime::NDArray y = tvm::runtime::NDArray::Empty({2, 2}, DLDataType{kDLFloat, 32, 1}, dev);
 
-  for (int i = 0; i < 2; ++i) {
-    for (int j = 0; j < 2; ++j) {
-      static_cast<float*>(x->data)[i * 2 + j] = i * 2 + j;
-    }
-  }
+  // for (int i = 0; i < 299; ++i) {
+  //   for (int j = 0; j < 299; ++j) {
+  //     for(int z = 0;z<3;z++){
+  //          static_cast<float*>(x->data)[i * 299 + j*299+] = i * 2 + j;
+  //     }
+     
+  //   }
+  // }
   // set the right input
-  set_input("x", x);
+  set_input("DecodeJpeg/contents", x);
   // run the code
   run();
   // get the output
-  get_output(0, y);
+  //get_output(0, y);
 
-  for (int i = 0; i < 2; ++i) {
-    for (int j = 0; j < 2; ++j) {
-      ICHECK_EQ(static_cast<float*>(y->data)[i * 2 + j], i * 2 + j + 1);
-    }
-  }
+  // for (int i = 0; i < 2; ++i) {
+  //   for (int j = 0; j < 2; ++j) {
+  //     ICHECK_EQ(static_cast<float*>(y->data)[i * 2 + j], i * 2 + j + 1);
+  //   }
+  // }
+}
+void printAllFunc(){
+//using Manager = tvm::runtime::Manager::Global();
+ std::vector<std::string> names = tvm::runtime::Registry::ListNames();
+  std::vector<const char *> outnames;
+  outnames.clear();
+ int f = open("./RegistryFuncs.txt",O_RDWR | O_CREAT, 00777);
+ for(size_t i = 0;i<names.size();++i){
+   outnames.push_back(names[i].c_str());
+   std::string tmp = names[i]+"\n";
+  write(f,(tmp).c_str(),tmp.size());
+  std::cout<<tmp;
+}
+close(f);
+}
+void printFunc(){
+  int *a = 0;
+  const char*** array;
+  TVMFuncListGlobalNames(a, array);
 }
 
 int main(void) {
-  DeploySingleOp();
-  DeployGraphExecutor();
+  // DeploySingleOp();
+  printAllFunc();
+  //DeployGraphExecutor();
   return 0;
 }

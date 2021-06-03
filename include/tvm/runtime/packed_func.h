@@ -84,7 +84,11 @@ class PackedFunc {
    *   }
    * \endcode
    */
+  
   using FType = std::function<void(TVMArgs args, TVMRetValue* rv)>;
+  /**
+   *FType = std::function<void(TVMArgs args, TVMRetValue* rv)>;
+  */
   /*! \brief default constructor */
   PackedFunc() {}
   /*! \brief constructor from null */
@@ -1356,7 +1360,13 @@ class TVMArgsSetter {
   /*! \brief The type code fields */
   int* type_codes_;
 };
-
+/**
+ * @brief 调用packedFunc
+ * 
+ * @tparam Args 
+ * @param args 
+ * @return TVMRetValue 
+ */
 template <typename... Args>
 inline TVMRetValue PackedFunc::operator()(Args&&... args) const {
   const int kNumArgs = sizeof...(Args);
