@@ -1,8 +1,10 @@
 import tensorflow.keras as keras
-import keras.layers as layers
+import tensorflow.keras.layers as layers
 import pprint
-param=param=param={'units': 10, 'activation': 'softmax', 'recurrent_activation': 'softmax', 'use_bias': False, 'unit_forget_bias': True, 'implementation': 2, 'return_sequences': True, 'return_state': False, 'go_backwards': True, 'stateful': True, 'time_major': False, 'unroll': True, 'input_shape': (20, 30), 'batch_size': 3}
-d1 = layers.LSTM(**param)
+import os
+os.environ["CUDA_VISIBLE_DEVICES"]="-1" 
+params={'filters': 256, 'kernel_size': 3, 'padding': 'valid', 'dilation_rate': 5, 'depth_multiplier': 10, 'activation': 'elu', 'use_bias': True, 'input_shape': [10, 1000], 'batch_size': 1}
+d1 = layers.SeparableConv1D(**params)
 model=keras.Sequential([
     d1
 ])
