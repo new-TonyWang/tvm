@@ -652,6 +652,9 @@ class TypeInferencer::Resolver : public MixedModeMutator, PatternMutator {
   template <typename T>
   Expr AttachCheckedType(const T* op, const Expr& post = Expr()) {
     auto it = tmap_.find(GetRef<Expr>(op));
+    // std::cout<<post<<std::endl;
+    // std::cout<<"--------------------------------------------------"<<std::endl;
+    // std::cout<<op<<std::endl;
     ICHECK(it != tmap_.end());
     Type checked_type = solver_->Resolve(it->second.checked_type);
 

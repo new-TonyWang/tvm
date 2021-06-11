@@ -1,0 +1,12 @@
+*.txt
+/Activation_layers
+/Conv1d_class
+/Conv2d_class
+/convlayers
+/Core_layers
+/Embedding_layers
+/Image_processing_layers
+/layers
+/Locally-connected_layers
+/Pooling_layers
+*.zip

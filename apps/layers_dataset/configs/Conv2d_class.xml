@@ -1,0 +1,118 @@
+<?xml version="10"?>
+<data >
+<class name="Conv2d_class">
+
+    <input name="input_shape" dim="2" channelstart="10" channelend="10" channel_step="10" start="100" endg="200" step_size="100"/>
+    <input name="batch_size" start="1" end="2"/>
+        <layer name="Conv2D">
+            <param name="filters" start="2" endg="10" step_size="3" fixsequence="1"/>
+            <param name="kernel_size" kernel_kind="Conv1D" start="1" endg="5" step_size="2" steprun="2"/>
+            <!-- <param name="strides" start="1" endg="10" step_size="4" /> -->
+            <param name="padding"  startrun="0" endrun="1"/>
+             <!-- <param name="data_format" steprun="2"/> --> 
+            <param name="dilation_rate" start="1" endg="10" step_size="4" steprun="3"/>
+           <!-- <param name="groups" start="2" channelnum="12" step_size="4"/> -->
+            <param name="activation" startrun="0" steprun="4"/>
+            <param name="use_bias" />
+        </layer>
+        <layer name="Conv2D">
+           <param name="filters" start="2" endg="10" step_size="3" fixsequence="1"/>
+            <param name="kernel_size" kernel_kind="Conv1D" start="1" endg="5" step_size="2" steprun="2"/>
+            <param name="strides" start="1" endg="10" step_size="4" steprun="3"/>
+             <param name="padding"  startrun="0" endrun="1"/>
+             <!-- <param name="data_format" steprun="2"/> -->
+            <!-- <param name="dilation_rate" start="1" endg="10" /> -->
+           <!-- <param name="groups" start="2" channelnum="12" step_size="4"/> -->
+            <param name="activation" startrun="0" steprun="4"/>
+            <param name="use_bias" />
+        </layer>
+
+
+        <layer name="Conv2DTranspose">
+            <param name="filters" start="2" endg="10" step_size="3" fixsequence="1"/>
+            <param name="kernel_size" kernel_kind="Conv1D" start="1" endg="5" step_size="2" steprun="2"/>
+            <param name="strides" start="1" endg="10" step_size="4" steprun="3"/>
+            <param name="output_padding" kernel_kind="Conv1D" start="0" endg="10" steprun="5"/>
+            <param name="padding"  startrun="0" endrun="1"/>
+            <!-- <param name="data_format" steprun="2"/> -->
+            <!-- <param name="dilation_rate" start="1" endg="10" step_size="4"/> -->
+           <!-- <param name="groups" start="2" channelnum="12" step_size="4"/> -->
+            <param name="activation" startrun="0" steprun="4"/>
+            <param name="use_bias" />
+        </layer>
+
+        <layer name="Conv2DTranspose">
+           <param name="filters" start="2" endg="10" step_size="3" fixsequence="1"/>
+            <param name="kernel_size" kernel_kind="Conv1D" start="1" endg="5" step_size="2" steprun="2"/>
+            <!-- <param name="strides" start="1" endg="10" step_size="1" /> -->
+            <param name="output_padding" kernel_kind="Conv1D" start="0" endg="10" steprun="5"/>
+            <param name="padding"  startrun="0" endrun="1"/>
+            <!-- <param name="data_format" steprun="2"/> -->
+            <param name="dilation_rate" start="1" endg="10" step_size="4" steprun="3"/>
+           <!-- <param name="groups" start="2" channelnum="12" step_size="4"/> -->
+            <param name="activation" startrun="0" steprun="4"/>
+            <param name="use_bias" />
+        </layer>
+
+
+
+        <layer name="SeparableConv2D">
+            <param name="filters" start="2" endg="10" step_size="3" fixsequence="1"/>
+            <param name="kernel_size" kernel_kind="Conv1D" start="1" endg="5" step_size="2" steprun="2"/>
+            <param name="output_padding" kernel_kind="Conv1D" start="0" endg="10" step_size="3" steprun="5"/>
+            <!-- <param name="strides" start="1" endg="10" step_size="1" /> -->
+           <param name="padding"  startrun="0" endrun="1"/>
+           <!-- <param name="data_format" steprun="2"/> -->
+            <param name="dilation_rate" start="1" endg="10" step_size="4" steprun="5"/>
+            <!-- <param name="groups" start="2" channelnum="12" step_size="4"/> --> 
+            <param name="activation" startrun="0" steprun="4"/>
+            <param name="use_bias" />
+            <param name="depth_multiplier" start="1" endg="10" step_size="3"/>
+        </layer>
+
+        <layer name="SeparableConv2D">
+           <param name="filters" start="2" endg="10" step_size="3" fixsequence="1"/>
+            <param name="kernel_size" kernel_kind="Conv1D" start="1" endg="5" step_size="2"  steprun="2"/>
+            <param name="output_padding" kernel_kind="Conv1D" start="0" endg="10" step_size="3" steprun="5"/>
+            <param name="strides" start="1" endg="10" step_size="4" steprun="5"/>
+             <param name="padding"  startrun="0" endrun="1"/>
+             <!-- <param name="data_format" steprun="2"/> -->
+            <!-- <param name="dilation_rate" start="1" endg="10" step_size="4"/> -->
+           <!-- <param name="groups" start="2" channelnum="12" step_size="4"/> -->
+            <param name="activation" startrun="0" steprun="4"/>
+            <param name="use_bias" />
+            <param name="depth_multiplier" start="1" endg="10" step_size="3"/>
+
+        </layer>
+
+        <layer name="DepthwiseConv2D">
+             <param name="filters" start="2" endg="10" step_size="3" fixsequence="1"/>
+
+            <param name="kernel_size" kernel_kind="Conv1D" start="1" endg="5" step_size="2"  steprun="2"/>
+              <param name="output_padding" kernel_kind="Conv2D" start="0" endg="10" step_size="3" steprun="5"/>
+             <param name="strides" start="1" endg="10" step_size="4" steprun="3"/>
+            <param name="padding" startrun="0" endrun="1" />
+            <!-- <param name="data_format" steprun="2"/> -->
+            <!-- <param name="dilation_rate" start="1" endg="10" /> -->
+           <!-- <param name="groups" start="2" channelnum="12" step_size="4"/> -->
+            <param name="activation" startrun="0" steprun="4"/>
+            <param name="use_bias" />
+            <param name="depth_multiplier" start="1" endg="10" step_size="3"/>
+        </layer>
+        <layer name="DepthwiseConv2D">
+            <param name="filters" start="2" endg="10" step_size="3" fixsequence="1"/>
+
+            <param name="kernel_size" kernel_kind="Conv1D" start="1" endg="5" step_size="2"  steprun="2"/>
+              <param name="output_padding" kernel_kind="Conv2D" start="0" endg="10" step_size="3" steprun="5"/>
+            <!-- <param name="strides" start="1" endg="10" step_size="1" /> -->
+            <param name="padding"  startrun="0" endrun="1"/>
+            <!-- <param name="data_format" steprun="2"/> -->
+            <param name="dilation_rate" start="1" endg="10" step_size="4"  steprun="3"/>
+           <!-- <param name="groups" start="2" channelnum="12" step_size="4"/> -->
+            <param name="activation" startrun="0" steprun="4"/>
+            <param name="use_bias" />
+            <param name="depth_multiplier" start="1" endg="10" step_size="3"/>
+        </layer>
+
+    </class>
+</data>

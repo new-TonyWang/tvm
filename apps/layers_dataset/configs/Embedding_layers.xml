@@ -1,0 +1,20 @@
+<?xml version="10"?>
+<data>
+ <class name="Embedding layers">
+ <input name="input_shape" dim="3" start="500" endg="1000" step_size="500"/>
+        <input name="batch_size" start="1" end="2"/>
+        <layer name="Embedding">
+            <param name="input_dim" start="0" end="100" step_size="10"/>
+            <param name="output_dim" start="0" end="100" step_size="10"/>
+            <param name="mask_zero"/>
+            <param name="input_length" start="1" end="10"/>
+        </layer>
+    
+        <layer name="Embedding">
+            <param name="input_dim" start="1" end="1" step_size="1"/>
+            <param name="output_dim" start="1" end="1" step_size="1"/>
+            <param name="mask_zero"/>
+            <param name="input_length" start="1" end="10"/>
+        </layer>
+    </class>
+</data>

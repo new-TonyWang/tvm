@@ -1,0 +1,79 @@
+<?xml version="10"?>
+<data>
+    <class name="Conv1d_class">
+        <input name="input_shape" dim="1" channelstart="10" channelend="10" channel_step="10" start="500" endg="1000" step_size="500"/>
+        <input name="batch_size" start="1" end="2"/>
+        <layer name="Conv1D">
+            <param name="filters" start="5" endg="10" step_size="5" fixsequence="1"/>
+            <param name="kernel_size" kernel_kind="Conv1D" start="1" endg="5" step_size="2" />
+            <!-- <param name="strides" start="1" endg="10" step_size="4" /> -->
+            <param name="padding"  steprun="2" />
+            <param name="dilation_rate" start="1" endg="10" step_size="4"/>
+            <param name="groups" start="1" channelnum="10" step_size="2"/>
+            <param name="activation" startrun="0" steprun="4"/>
+            <param name="use_bias" />
+        </layer>
+        <layer name="Conv1D">
+            <param name="filters" start="2" endg="10" step_size="3" fixsequence="1"/>
+            <param name="kernel_size" kernel_kind="Conv1D" start="1" endg="5" step_size="2" />
+            <param name="strides" start="1" endg="10" step_size="4" />
+            <param name="padding" steprun="2" />
+            <!-- <param name="dilation_rate" start="1" endg="10" step_size="4"/> -->
+            <param name="groups" start="1" channelnum="10" step_size="3"/>
+            <param name="activation" startrun="0" steprun="4"/>
+            <param name="use_bias" />
+        </layer>
+
+        <layer name="Conv1DTranspose">
+            <param name="filters" start="2" endg="10" step_size="3" fixsequence="1"/>
+            <param name="kernel_size" kernel_kind="Conv1D" start="1" endg="5" step_size="2" />
+            <param name="strides" start="1" endg="10" step_size="4" />
+            <param name="output_padding" kernel_kind="Conv1D" start="0" endg="10" steprun="3"/>
+            <param name="padding" steprun="2" />
+            <!-- <param name="dilation_rate" start="1" endg="10" step_size="4"/> -->
+            <param name="groups" start="1" channelnum="10" step_size="3"/>
+            <param name="activation" startrun="0" steprun="4"/>
+            <param name="use_bias" />
+        </layer>
+        <layer name="Conv1DTranspose">
+            <param name="filters" start="2" endg="10" step_size="3" fixsequence="1"/>
+            <param name="kernel_size" kernel_kind="Conv1D" start="1" endg="5" step_size="2" />
+            <!-- <param name="strides" start="1" endg="10" step_size="1" /> -->
+            <param name="output_padding" kernel_kind="Conv1D" start="0" endg="10" steprun="3"/>
+            <param name="padding" steprun="2" />
+            <param name="dilation_rate" start="1" endg="10" step_size="4"/>
+            <param name="groups" start="1" channelnum="10" step_size="3"/>
+            <param name="activation" startrun="0" steprun="4"/>
+            <param name="use_bias" />
+        </layer>
+
+        <layer name="SeparableConv1D">
+            <param name="filters" start="2" endg="10" step_size="3" fixsequence="1"/>
+
+            <param name="kernel_size" kernel_kind="Conv1D" start="1" endg="5" step_size="2" />
+            <param name="output_padding" kernel_kind="Conv1D" start="0" endg="10" steprun="5"/>
+            <!-- <param name="strides" start="1" endg="10" step_size="1" /> -->
+            <param name="padding" steprun="2" />
+            <param name="dilation_rate" start="1" endg="10" step_size="4"/>
+            <param name="groups" start="1" channelnum="10" step_size="3"/>
+            <param name="activation" startrun="0" steprun="4"/>
+            <param name="use_bias" />
+            <param name="depth_multiplier" start="1" endg="10" step_size="3"/>
+        </layer>
+
+        <layer name="SeparableConv1D">
+            <param name="filters" start="2" endg="10" step_size="3" fixsequence="1"/>
+
+            <param name="kernel_size" kernel_kind="Conv1D" start="1" endg="5" step_size="2" />
+            <param name="output_padding" kernel_kind="Conv1D" start="0" endg="10" steprun="8"/>
+            <param name="strides" start="1" endg="10" step_size="4" />
+            <param name="padding" steprun="2" />
+            <!-- <param name="dilation_rate" start="1" endg="10" step_size="4"/> -->
+            <param name="groups" start="1" channelnum="10" step_size="3"/>
+            <param name="activation" startrun="0" steprun="4"/>
+            <param name="use_bias" />
+            <param name="depth_multiplier" start="1" endg="10" step_size="3"/>
+        </layer>
+
+    </class>
+</data>

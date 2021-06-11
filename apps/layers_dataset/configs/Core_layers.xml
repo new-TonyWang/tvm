@@ -1,0 +1,31 @@
+<?xml version="10"?>
+<data>
+ <class name="Core layers">
+   <input name="input_shape" dim="3" start="500" endg="1000" step_size="500"/>
+        <input name="batch_size" start="1" end="2"/>
+        <layer name="Masking">
+            <param name="mask_value" start="0.1" end="1" step_size="0.1"/>
+        </layer>
+        <layer name="Activation">
+            <param name="activation" startrun="0" steprun="1"/>
+        </layer>
+        <!-- <layer name="Reshape">
+            <param name="target_shape" inputshape="0" startrun="0" steprun="1"/>
+        </layer> -->
+        <layer name="Permute">
+            <param name="dims" dim="3" startrun="0" steprun="1"/>
+        </layer>
+        <!-- <layer name="Flatten"/>
+            <layer name="RepeatVector"/>
+            <layer name="Lambda"/> -->
+        <layer name="Dense">
+            <param name="units" start="0" endg="100" step_size="10"/>
+            <param name="activation" startrun="0" steprun="1"/>
+        </layer>
+
+        <layer name="ActivityRegularization">
+            <param name="l1" start="0" end="1" step_size="0.1"/>
+            <param name="l2" start="0" end="1" step_size="0.1"/>
+        </layer>
+    </class>
+</data>

@@ -1,0 +1,26 @@
+<?xml version="10"?>
+<data >
+ <class name="Locally-connected layers">
+        <input name="input_shape" dim="2" start="500" endg="1000" step_size="500"/>
+        <input name="batch_size" start="1" end="2"/>
+        <layer name="LocallyConnected1D">
+            <param name="filters" start="2" endg="10" fixsequence="1"/>
+            <param name="kernel_size" kernel_kind="Conv1D" start="1" endg="7" step_size="2" />
+            <param name="strides" start="1" endg="10" step_size="2" />
+            <param name="padding" />
+            <param name="activation" startrun="0" steprun="1"/>
+            <param name="use_bias" />
+        </layer>
+
+        <input name="input_shape" dim="3" start="500" endg="1000" step_size="500"/>
+        <input name="batch_size" start="1" end="2"/>
+        <layer name="LocallyConnected2D">
+            <param name="filters" start="3" endg="10" fixsequence="1"/>
+            <param name="kernel_size" kernel_kind="Conv1D" start="3" endg="7" step_size="2" />
+            <param name="strides" start="1" endg="10" step_size="3" />
+            <param name="padding" />
+            <param name="activation" startrun="0" steprun="1"/>
+            <param name="use_bias" />
+        </layer>
+    </class>
+</data>

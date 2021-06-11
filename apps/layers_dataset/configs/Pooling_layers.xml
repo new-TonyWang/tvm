@@ -1,0 +1,54 @@
+<?xml version="10"?>
+<data>
+    <class name="Pooling layers">
+       <input name="input_shape" dim="1" channelstart="10" channelend="20" channel_step="10" start="500" endg="1000" step_size="500"/>
+        <input name="batch_size" start="1" end="2"/>
+        <layer name="MaxPooling1D">
+            <param name="pool_size" start="1" endg="10" step_size="1" />
+            <param name="padding" />
+        </layer>
+
+        <layer name="AveragePooling1D">
+            <param name="pool_size" start="1" endg="10" step_size="1" />
+            <param name="padding" />
+        </layer>
+
+        <input name="input_shape" dim="2" channelstart="10" channelend="20" channel_step="10" start="500" endg="1000" step_size="500"/>
+
+        <input name="batch_size" start="1" end="2"/>
+        <layer name="MaxPooling2D">
+            <param name="pool_size" start="1" endg="10" step_size="1" fallbacktoone="1"/>
+            <param name="padding" />
+        </layer>
+
+        <layer name="AveragePooling2D">
+            <param name="pool_size" start="1" endg="10" step_size="1" fallbacktoone="1"/>
+            <param name="padding" />
+        </layer>
+
+       <input name="input_shape" dim="3" channelstart="10" channelend="20" channel_step="10" start="500" endg="1000" step_size="500"/>
+
+        <input name="batch_size" start="1" end="2"/>
+        <layer name="AveragePooling3D">
+            <param name="pool_size" start="1" endg="10" step_size="1" fallbacktoone="1"/>
+            <param name="padding" />
+        </layer>
+        
+        <layer name="MaxPooling3D">
+            <param name="pool_size" start="1" endg="10" step_size="1" fallbacktoone="1"/>
+            <param name="padding" />
+        </layer>
+        <!-- <layer name="GlobalAveragePooling1D">
+            </layer>
+            <layer name="GlobalAveragePooling2D">
+            </layer>
+            <layer name="GlobalAveragePooling3D">
+            </layer>
+            <layer name="GlobalMaxPooling1D">
+            </layer>
+            <layer name="GlobalMaxPooling2D">
+            </layer>
+            <layer name="GlobalMaxPooling3D">
+            </layer> -->
+    </class>
+</data>

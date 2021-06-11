@@ -1,6 +1,13 @@
 import copy
 from layer_param_pair import LayerParampair
 import re
+"""
+使用多叉树存储整张xml的数据，并实现如下功能：
+1.父节点的属性值会传递给子节点
+2.以input为标签的节点会把该节点表示的名称和属转换成和其深度相同或者更深的layer层的param节点，并且位于xml下方的节点会覆写上方的节点
+
+若无其他需要，不需要修改该文件
+"""
 class Ptree():
     
     class Node(object):
@@ -29,17 +36,24 @@ class Ptree():
     class NodeGRoup(treeNode):
         
         def __init__(self, name=None, param_config=None):
-            self.__childs = []
+            
+            self.__childs = {}
             self.__size = 0
             super().__init__(name, param_config=param_config)
         
         def get__childs(self):
-            return self.__childs
+            l=[]
+            for i in self.__childs.keys():
+                l.append(self.__childs[i])
+            return l
 
         def add_child(self, child):
-
-            self.__childs.append(child)
-            self.__size = self.__size+1
+            if(self.__childs.get(child.get__name())!=None):
+                print(child.get__name())
+                self.__childs.update({child.get__name():child})
+            else:
+                self.__childs[child.get__name()]=child
+                self.__size = self.__size+1
 
         def __str__(self) -> str:
             out=[]
@@ -74,11 +88,9 @@ class Ptree():
         child_conf = copy.deepcopy(parent.get__param_config())
         if(param_conf):
             child_conf.update(param_conf)
-        child = Ptree.NodeGRoup(name,param_config=child_conf)
-        self.layernodes.append((name,child))#在叶子节点中建立hash
+        child = Ptree.layerNodeGroup(name,param_config=child_conf)
+        self.layernodes.append((name,child))#在叶子节点中建立连接
         return child
-
-    
 
     def create_Node_param(self, parent,name, param_conf=None):
         child_conf = copy.deepcopy(parent.get__param_config())
@@ -91,7 +103,9 @@ class Ptree():
 
 
 
-    def rinflate(self, parent: NodeGRoup, next_event):
+    def rinflate(self, parent: NodeGRoup, next_event,side_Nodes=[]):#sidenodes用于存储和输入相关的
+        local_side_Nodes=side_Nodes
+        SideNode_added=False
         while(True):
             event, elem = next_event()
             if(event == "xmlend"):#读到文档结尾
@@ -129,7 +143,11 @@ class Ptree():
 
                 elif(elem.tag == "param"):
                     child = self.create_Node_param(parent, name, param_conf)
-                print(param_conf)
+                    print(param_conf)
+
+                elif(elem.tag == "input"):
+                    child = self.create_Node_param(parent, name, param_conf)
+                    side_Nodes.append(child)
                 #print("depth is {}".format(tree_depth))
 
             elif(event == "end"):
@@ -149,8 +167,15 @@ class Ptree():
                 break
             else:
                 continue
-            self.rinflate(child, next_event)
-            
+            self.rinflate(child, next_event,side_Nodes=local_side_Nodes)
+                
+            if(isinstance(parent,Ptree.layerNodeGroup) and len(side_Nodes)>0 and SideNode_added==False):
+                for node in local_side_Nodes:
+                    SideNode_added=True
+                    parent.add_child(node)
+
+            # if(isinstance(parent,Ptree.NodeGRoup) and isinstance(child,Ptree.Node)):
+            #     continue#不在class节点中加入叶子节点
             parent.add_child(child)
 
     def inflate(self, rootNode,parser):

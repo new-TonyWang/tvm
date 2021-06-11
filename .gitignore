@@ -244,3 +244,5 @@ conda/pkg
 *.nam
 *.til
 *.params
+apps/layers_dataset/Conv1d_class/log.txt
+apps/layers_dataset/log.txt

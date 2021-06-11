@@ -1,0 +1,26 @@
+<?xml version="10"?>
+<data>
+<class name="Noise layers">
+        <!-- <layer name="AlphaDropout"/> -->
+        <layer name="GaussianNoise">
+            <param name="stddev" start="-1" end="1" step_size="0.1"/>
+        </layer>
+
+        <!-- <layer name="GaussianDropout">
+            
+            
+            </layer> -->
+    </class>
+
+    <class name="Normalization layers">
+        <!-- <layer name="LayerNormalization"/>
+            <layer name="SyncBatchNormalization"/> -->
+        <layer name="BatchNormalization">
+            <param name="axis" dim="2" start="0" endg="3" step_size="1"/>
+            <param name="momentun" start="0.9" end="1" step_size="0.05"/>
+            <param name="epsilon" start="0" endg="5" step_size="1" fixsequence="1"/>
+            <param name="center"/>
+            <param name="scale"/>
+        </layer>
+    </class>
+</data>

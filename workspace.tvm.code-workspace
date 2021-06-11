@@ -80,7 +80,17 @@
 			"__tree": "cpp",
 			"queue": "cpp",
 			"stack": "cpp",
-			"c_backend_api.h": "c"
+			"c_backend_api.h": "c",
+			"csetjmp": "cpp",
+			"csignal": "cpp",
+			"codecvt": "cpp",
+			"complex": "cpp",
+			"any": "cpp",
+			"filesystem": "cpp",
+			"regex": "cpp",
+			"shared_mutex": "cpp",
+			"variant": "cpp",
+			"__nullptr": "cpp"
 		},
 		"jupyter.jupyterServerType": "local"
 	}

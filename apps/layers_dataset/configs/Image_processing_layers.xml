@@ -1,0 +1,39 @@
+<?xml version="10"?>
+<data>
+    <class name="Image processing layers">
+     <input name="input_shape" dim="3" start="500" endg="1000" step_size="500"/>
+        <input name="batch_size" start="1" end="2"/>
+        <layer name="UpSampling1D">
+            <param name="size" start="1" endg="10"/>
+            <param name="interpolation"/>
+        </layer>
+        <layer name="UpSampling2D">
+            <param name="size" start="1" endg="10"/>
+            <param name="interpolation"/>
+        </layer>
+        <layer name="UpSampling3D">
+            <param name="size" start="1" endg="10"/>
+
+        </layer>
+        <layer name="ZeroPadding1D">
+            <param name="padding" start="1" endg="10"/>
+
+        </layer>
+        <layer name="ZeroPadding2D">
+            <param name="padding" start="1" endg="10"/>
+
+        </layer>
+        <layer name="ZeroPadding3D">
+            <param name="padding" start="1" endg="10"/>
+        </layer>
+        <layer name="Cropping1D">
+            <param name="cropping" start="1" endg="10" steprun="10"/>
+        </layer>
+        <layer name="Cropping2D">
+            <param name="cropping" start="1" endg="10" steprun="10"/>
+        </layer>
+        <layer name="Cropping3D">
+            <param name="cropping" start="1" endg="10" steprun="10"/>
+        </layer>
+    </class>
+</data>

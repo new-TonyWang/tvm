@@ -1,4 +1,7 @@
 from generate_param_value import *
+"""
+保存了所有算子的参数和其值的生成函数的对应关系，如果不需要增加新算子则不需要修改
+"""
 global_table={
 'LeakyReLU': {'self': None,
                'alpha': get_value,
@@ -19,11 +22,11 @@ global_table={
                      'theta': get_value,#1.0
                      'kwargs': None},
  'Softmax': {'self': None,
-             'axis': get_value,#-1
+             'axis': get_axis,#-1
              'kwargs': None},
 
  'Conv1D': {'self': None,
-            'filters': get_value,
+            'filters': get_filters,
             'kernel_size': kernel_size_dispatch,
             'strides': get_stride_or_dilation_rate_pool_size,
             'padding': get_padding,
@@ -41,7 +44,7 @@ global_table={
             'bias_constraint': None,
             'kwargs': None},
  'Conv2D': {'self': None,
-            'filters': get_value,
+            'filters': get_filters,
             'kernel_size': kernel_size_dispatch,
             'strides': get_strides2D_and_dilation_rate_pool_size,
             'padding': get_padding,
@@ -60,7 +63,7 @@ global_table={
             'kwargs': None},
 
  'Conv3D': {'self': None,
-            'filters': get_value,
+            'filters': get_filters,
             'kernel_size': kernel_size_dispatch,
             'strides': get_strides3D_and_dilation_rate_pool_size,
             'padding': get_padding,
@@ -79,7 +82,7 @@ global_table={
             'kwargs': None},
 
  'Conv1DTranspose': {'self': None,
-                     'filters': get_value,
+                     'filters': get_filters,
                      'kernel_size': kernel_size_dispatch,
                      'strides': get_stride_or_dilation_rate_pool_size,
                      'padding': get_padding,
@@ -98,7 +101,7 @@ global_table={
                      'kwargs': None},
 
  'Conv2DTranspose': {'self': None,
-                     'filters': get_value,
+                     'filters': get_filters,
                      'kernel_size': kernel_size_dispatch,
                      'strides':get_strides2D_and_dilation_rate_pool_size,
                      'padding': get_padding,
@@ -117,7 +120,7 @@ global_table={
                      'kwargs': None},
 
  'Conv3DTranspose': {'self': None,
-                     'filters': get_value,
+                     'filters': get_filters,
                      'kernel_size': kernel_size_dispatch,
                      'strides':get_strides3D_and_dilation_rate_pool_size,
                      'padding': get_padding,
@@ -136,7 +139,7 @@ global_table={
                      'kwargs': None},
 
  'SeparableConv1D': {'self': None,
-                     'filters': get_value,
+                     'filters': get_filters,
                      'kernel_size': kernel_size_dispatch,
                      'strides': get_stride_or_dilation_rate_pool_size,
                      'padding': get_padding,
@@ -158,7 +161,7 @@ global_table={
                      'kwargs': None},
 
  'SeparableConv2D': {'self': None,
-                     'filters': get_value,
+                     'filters': get_filters,
                      'kernel_size': kernel_size_dispatch,
                      'strides': get_strides2D_and_dilation_rate_pool_size,
                      'padding': get_padding,
@@ -288,7 +291,7 @@ global_table={
 #             'kwargs': None},
 
  'Dense': {'self': None,
-           'units': get_value,
+           'units': get_units,
            'activation': get_activation,
            'use_bias': get_bool,
            'kernel_initializer': 'glorot_uniform',
@@ -325,7 +328,7 @@ global_table={
                'kwargs': None},
 
  'LocallyConnected1D': {'self': None,
-                        'filters': get_value,
+                        'filters': get_filters,
                         'kernel_size': kernel_size_dispatch,
                         'strides': get_stride_or_dilation_rate_pool_size,
                         'padding': get_padding,
@@ -343,7 +346,7 @@ global_table={
                         'kwargs': None},
 
  'LocallyConnected2D': {'self': None,
-                        'filters': get_value,
+                        'filters': get_filters,
                         'kernel_size': kernel_size_dispatch,
                         'strides': get_strides2D_and_dilation_rate_pool_size,
                         'padding': get_padding,
@@ -378,7 +381,7 @@ global_table={
              'kwargs': None},
 
  'Concatenate': {'self': None,
-                 'axis': get_shared_axes,#-1
+                 'axis': get_axis,#-1
                  'kwargs': None},
 
  'Dot': {'self': None,
@@ -425,8 +428,8 @@ global_table={
                      'kwargs': None},
 
  'LayerNormalization': {'self': None,
-                        'axis': get_shared_axes,#-1
-                        'epsilon': get_value,#0.001
+                        'axis': get_axis,#-1
+                        'epsilon': get_epsilon,#0.001
                         'center': get_bool,
                         'scale': get_bool,
                         'beta_initializer': 'zeros',
@@ -440,9 +443,9 @@ global_table={
                         'kwargs': None},
 
  'BatchNormalization': {'self': None,
-                        'axis': -1,#-1
-                        'momentum': 0.99,#0.99
-                        'epsilon': 0.001,#0.001
+                        'axis': get_axis,#-1
+                        'momentum': get_value,#0.99
+                        'epsilon': get_epsilon,#0.001
                         'center': get_bool,
                         'scale': get_bool,
                         'beta_initializer': 'zeros',
@@ -466,7 +469,7 @@ global_table={
  'MaxPooling1D': {'self': None,
                   'pool_size': get_stride_or_dilation_rate_pool_size,
                   'strides': get_stride_or_dilation_rate_pool_size,
-                  'padding': get_activation,
+                  'padding': get_padding,
                   'data_format': get_data_format,
                   'kwargs': None},
 
@@ -492,8 +495,8 @@ global_table={
                       'kwargs': None},
 
  'AveragePooling2D': {'self': None,
-                      'pool_size': get_stride_or_dilation_rate_pool_size,
-                      'strides': get_stride_or_dilation_rate_pool_size,
+                      'pool_size': get_strides2D_and_dilation_rate_pool_size,
+                      'strides': get_strides2D_and_dilation_rate_pool_size,
                       'padding': get_padding,
                       'data_format': get_data_format,
                       'kwargs': None},
@@ -567,7 +570,7 @@ global_table={
 #                    'kwargs': None},
 
  'SimpleRNN': {'self': None,
-               'units': None,
+               'units': get_units,
                'activation': get_activation,
                'use_bias': get_bool,
                'kernel_initializer': 'glorot_uniform',
@@ -590,7 +593,7 @@ global_table={
                'kwargs': None},
 
  'GRU': {'self': None,
-         'units': get_value,
+         'units': get_units,
          'activation': get_activation,
          'recurrent_activation': get_activation,
          'use_bias': get_bool,
@@ -637,7 +640,7 @@ global_table={
 #              'kwargs': None},
 
  'LSTM': {'self': None,
-          'units': get_value,
+          'units': get_units,
           'activation': get_activation,
           'recurrent_activation': get_activation,
           'use_bias': get_bool,

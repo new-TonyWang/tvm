@@ -9,9 +9,12 @@ import tensorflow.keras as keras
 import numpy as np
 import os
 from tvm import relay, auto_scheduler
-
+"""
+编译mnist模型
+"""
 def  test_mnist():
-    path = "./mnist_02.h5"
+    path = "./mnist_02.3.h5"
+    print(tf.__version__)
     ctx = tvm.cpu(0)
     #target=tvm.target.Target("llvm -device=arm_cpu -mtriple=aarch64-linux-gnu")
     target_host = 'llvm'
@@ -20,7 +23,7 @@ def  test_mnist():
     mod = keras.models.load_model(path,compile=True)
     input_tensor = np.ones(shape=(1,28,28,1))
     output_tensor = np.zeros(shape=(1,1))
-    shape_dict = {"input_1": (1,28,28,1)}
+    shape_dict = {"conv2d_input": (1,28,28,1)}
     dtype_dict = {"input": "float32"}
     mod, params = relay.frontend.from_keras(mod,layout = layout,shape=shape_dict)
     print("Tensorflow keras imported to relay frontend.")
@@ -65,7 +68,7 @@ def  test_mnist():
     # b = tvm.nd.array(output_tensor,ctx)
     #lib(a,b)
     #m = graph_runtime.GraphModule(lib["default"](tvm.cpu(0)))
-    path_lib = "./mnist_llvm_x86_tune2.so"
+    path_lib = "mnist_02.3.so"
 
     # from tvm.contrib import ndk
     # lib.export_library(path_lib,ndk.create_shared)

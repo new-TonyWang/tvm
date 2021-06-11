@@ -1,6 +1,10 @@
 import copy
 from layers_param_data import global_table
 from generate_param_value import *
+"""
+该文件主要实现了参数组合的枚举并过滤掉不匹配的参数名称，目前该文件的函数运行良好，不需要修改
+"""
+
 class LayerParampair(object):
    
     class Permu:
@@ -93,6 +97,9 @@ class LayerParampair(object):
         
         
         def next_permutation(self,previous_config):
+            """
+            类似基于回溯的树的深度优先遍历，不同的是每调用该函数一次就会得到一组新的参数，而不是一次获取所有参数
+            """
             func=self.env.params_func
             while(self.ptr<self.len-1):
                 fname=self.funclist[self.ptr]

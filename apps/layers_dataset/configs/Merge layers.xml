@@ -1,0 +1,25 @@
+<?xml version="10"?>
+<data>
+ <class name="Merge layers">
+        <layer name="Add"/>
+        <layer name="Subtract"/>
+        <layer name="Multiply"/>
+        <layer name="Average"/>
+        <layer name="Maximum"/>
+        <layer name="Minimum"/>
+        <layer name="Concatenate">
+            <param name="axis" dim="1" start="0" end="3" step_size="1"/>
+        </layer>
+        <!-- <layer name="Dot">
+                <param name="axes" inputshape="1"/>无法设置dot
+            </layer> -->
+        <layer name="add"/>
+        <layer name="subtract"/>
+        <layer name="multiply"/>
+        <layer name="average"/>
+        <layer name="maximum"/>
+        <layer name="minimum"/>
+        <layer name="concatenate"/>
+        <layer name="dot"/>
+    </class>
+</data>

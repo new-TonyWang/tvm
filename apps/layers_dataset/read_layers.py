@@ -3,20 +3,9 @@ from layer_info import keras_layer
 import re
 from xml.etree.ElementTree import XMLPullParser,ElementTree
 from classification_tree import *
-
-def read_layers(path):
-    layers_list= []
-    kind = None
-    with open(path,'r') as file:
-       for line in file:
-            line=line.strip()
-            if(line.startswith('#')):
-               kind=line[1:].strip()#读取类型
-            elif(re.match('^[^s][0-9]*[a-z]*[A-Z]*',line)):#字符串行
-                layers_list.append(keras_layer(line,kind))
-            else:#空行
-                continue
-    return layers_list
+"""
+读取xml文件并得到所有算子的参数设置
+"""
 
 def read_layers_xml(path):
     parser = XMLPullParser(["start", "end", "comment", "pi", "start-ns", "end-ns"])
